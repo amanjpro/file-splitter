@@ -8,7 +8,7 @@ import java.io.{PrintWriter, BufferedReader}
 
 object App {
   def getPartNames(base: String, sep: String, parts: Int): Seq[String] =
-    (0 to parts).map(i => s"$base$sep$i%05d")
+    (0 until parts).map(i => f"part-$base$sep$i%05d")
 
   def getSource(config: Config, fs: FS): BufferedReader = {
     val path = fs.extractFilePath(config.inputFile)
@@ -25,7 +25,7 @@ object App {
       val path = fs.extractFilePath(file)
       config.outputCompression match {
         case Some("gzip") =>
-          fs.sink(path).gzip.printer
+          fs.sink(s"$path.gz").gzip.printer
         case _      =>
           fs.sink(path).printer
       }
