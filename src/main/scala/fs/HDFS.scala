@@ -1,7 +1,7 @@
 package me.amanj.file.splitter.fs
 
 import java.net.URI
-import java.io.{InputStream, PrintWriter}
+import java.io.{InputStream, OutputStream}
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
 
@@ -26,6 +26,6 @@ class HDFS(rootURI: String = HDFSDefaultRootURI,
   def source(path: String): InputStream =
     fileSystem.open(new Path(path))
 
-  def sink(path: String): PrintWriter =
-    new PrintWriter(fileSystem.create(new Path(path)))
+  def sink(path: String): OutputStream =
+    fileSystem.create(new Path(path))
 }

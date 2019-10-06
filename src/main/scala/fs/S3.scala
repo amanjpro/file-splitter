@@ -29,8 +29,8 @@ class S3(region: Region) extends FS {
     )
   }
 
-  def sink(file: String): PrintWriter = {
-    new PrintWriter(new S3.S3OutputStream(s3Client, bucket(file), key(file)))
+  def sink(file: String): OutputStream = {
+    new S3.S3OutputStream(s3Client, bucket(file), key(file))
   }
 }
 object S3 {
