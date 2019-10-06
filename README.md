@@ -13,4 +13,11 @@ A very simple utility to split large files into smaller ones.
 
 ## Usage example:
 
-`bin/splitter -i file:///tmp/path-to-input.gz -o s3://my-bucket/my-key --s3-output-region us-west-2 -n 3 -x gzip -z gzip`
+- Download the latest `file-splitter-distribution-$VERSION.tar.gz` file
+- Extract the file `tar -xzf file-splitter-distribution-$VERSION.tar.gz`
+- `cd` to the extracted directory
+- Run the binary:
+  ```sh
+  bin/splitter -i file:///tmp/path-to-input.gz -o \
+    s3://my-bucket/my-key --s3-output-region us-west-2 -n 3 -x gzip -z gzip
+  ```
