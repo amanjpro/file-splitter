@@ -11,6 +11,10 @@ class LocalFS extends FS {
     new FileOutputStream(path)
 
   def separator: String = File.separator
+
+
+  def extractFilePath(path: String): String =
+    path.replace("file://", "")
 }
 
 

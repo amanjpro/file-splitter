@@ -33,8 +33,9 @@ class S3(region: Region) extends FS {
     new S3.S3OutputStream(s3Client, bucket(file), key(file))
   }
 
-
   def separator: String = "/"
+
+  def extractFilePath(path: String): String = path
 }
 object S3 {
   class S3OutputStream(s3Client: S3Client,

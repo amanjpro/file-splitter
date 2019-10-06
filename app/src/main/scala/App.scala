@@ -10,21 +10,24 @@ object App {
   def getPartNames(base: String, sep: String, parts: Int): Seq[String] =
     (0 to parts).map(i => s"$base$sep$i%05d")
 
-  def getSource(config: Config, fs: FS): BufferedReader =
+  def getSource(config: Config, fs: FS): BufferedReader = {
+    val path = fs.extractFilePath(config.inputFile)
     config.inputCompression match {
       case Some("gzip") =>
-        fs.source(config.inputFile).gzip.buffered
+        fs.source(path).gzip.buffered
       case _      =>
-        fs.source(config.inputFile).buffered
+        fs.source(path).buffered
     }
+  }
 
   def getSinks(config: Config, fileNames: Seq[String], fs: FS): Seq[PrintWriter] =
     fileNames.map { file =>
+      val path = fs.extractFilePath(file)
       config.outputCompression match {
         case Some("gzip") =>
-          fs.sink(file).gzip.printer
+          fs.sink(path).gzip.printer
         case _      =>
-          fs.sink(file).printer
+          fs.sink(path).printer
       }
     }
 

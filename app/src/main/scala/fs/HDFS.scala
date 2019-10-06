@@ -23,6 +23,9 @@ class HDFS(rootURI: String = HDFSDefaultRootURI,
     FileSystem.get(URI.create(rootURI), conf)
   }
 
+  def extractFilePath(path: String): String =
+    path.replace("hdfs://", "")
+
   def source(path: String): InputStream =
     fileSystem.open(new Path(path))
 
