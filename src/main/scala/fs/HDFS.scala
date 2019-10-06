@@ -28,4 +28,6 @@ class HDFS(rootURI: String = HDFSDefaultRootURI,
 
   def sink(path: String): OutputStream =
     fileSystem.create(new Path(path))
+
+  def separator: String = Path.SEPARATOR
 }

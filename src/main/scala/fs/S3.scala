@@ -32,6 +32,9 @@ class S3(region: Region) extends FS {
   def sink(file: String): OutputStream = {
     new S3.S3OutputStream(s3Client, bucket(file), key(file))
   }
+
+
+  def separator: String = "/"
 }
 object S3 {
   class S3OutputStream(s3Client: S3Client,

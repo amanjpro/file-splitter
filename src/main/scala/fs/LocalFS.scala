@@ -1,6 +1,7 @@
 package me.amanj.file.splitter.fs
 
-import java.io.{FileInputStream, OutputStream, FileOutputStream, InputStream}
+import java.io.{File, FileInputStream, OutputStream,
+  FileOutputStream, InputStream}
 
 class LocalFS extends FS {
   def source(path: String): InputStream =
@@ -8,6 +9,8 @@ class LocalFS extends FS {
 
   def sink(path: String): OutputStream =
     new FileOutputStream(path)
+
+  def separator: String = File.separator
 }
 
 
