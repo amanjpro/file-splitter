@@ -10,7 +10,7 @@ package object fs {
   val SupportedFS = Seq("hdfs://", "file://", "s3://")
 
   def getInputFS(config: Config): FS = {
-    if(config.inputFile.startsWith("local://")) new LocalFS
+    if(config.inputFile.startsWith("file://")) new LocalFS
     else if(config.inputFile.startsWith("hdfs://")) {
       val maybeFS = for {
         root <- config.inputHdfsRootURI
@@ -29,7 +29,7 @@ package object fs {
   }
 
   def getOutputFS(config: Config): FS = {
-    if(config.outputDir.startsWith("local://")) new LocalFS
+    if(config.outputDir.startsWith("file://")) new LocalFS
     else if(config.outputDir.startsWith("hdfs://")) {
       val maybeFS = for {
         root <- config.outputHdfsRootURI
