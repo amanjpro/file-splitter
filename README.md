@@ -13,7 +13,7 @@ A very simple utility to split large files into smaller ones.
 
 ## Usage example:
 
-- Download the latest `file-splitter-distribution-$VERSION.tar.gz` file
+- Download the latest `file-splitter-distribution-$VERSION.tar.gz` [file](https://github.com/amanjpro/file-splitter/releases)
 - Extract the file `tar -xzf file-splitter-distribution-$VERSION.tar.gz`
 - `cd` to the extracted directory
 - Run the binary:
