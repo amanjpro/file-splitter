@@ -8,7 +8,7 @@ import java.io.{PrintWriter, BufferedReader}
 
 object App {
   def getPartNames(base: String, sep: String, parts: Int): Seq[String] =
-    (0 until parts).map(i => f"part-$base$sep$i%05d")
+    (0 until parts).map(i => f"$base${sep}part-$i%05d")
 
   def getSource(config: Config, fs: FS): BufferedReader = {
     val path = fs.extractFilePath(config.inputFile)

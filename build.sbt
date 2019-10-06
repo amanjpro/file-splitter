@@ -4,7 +4,8 @@ val ProjectScalaVersion = "2.13.1"
 val LibraryDependencies = Seq(
   "software.amazon.awssdk" % "s3" % "2.9.13",
   "org.apache.hadoop" % "hadoop-client" % "3.2.1",
-  "com.github.scopt" %% "scopt" % "3.7.1"
+  "com.github.scopt" %% "scopt" % "3.7.1",
+  "org.scalatest" %% "scalatest" % "3.0.8" % "test"
 )
 
 organization in ThisBuild := Organization
