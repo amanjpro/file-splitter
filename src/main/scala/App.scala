@@ -1,11 +1,11 @@
-package me.amanj.splitter
+package me.amanj.file.splitter
 
 // IO imports
 import java.io.{InputStream, OutputStream, FileInputStream, FileOutputStream,
   InputStreamReader, BufferedReader, PrintWriter, Reader}
 import java.util.zip.GZIPInputStream
 import java.nio.charset.{Charset, StandardCharsets}
-import java.nio.file.{Path, FileSystems}
+import java.nio.file.{Files, Path, FileSystems}
 
 // S3 imports
 import software.amazon.awssdk.regions.Region
@@ -21,96 +21,149 @@ import org.apache.hadoop.fs.{FileSystem => HDFSFileSystem, Path => HDFSPath}
 // Other imports
 import java.net.URI
 
-object App {
-  val HDFSDefaultRootURI = "hdfs://localhost:8020"
-  val HDFSDefaultUser = "hdfs"
-  val HDFSDefaultHome = "/"
+trait FS {
+  def source(path: String): InputStream
+  def sink(path: String): PrintWriter
+}
 
-  def split(input: BufferedReader, printers: Array[PrintWriter]): Unit = {
-    var sinkIndex = 0
-    input.lines.forEach { line =>
-      printers(sinkIndex).println(line)
-      sinkIndex = (sinkIndex + 1) % printers.length
-    }
-    printers.foreach { printer =>
-      printer.flush
-      printer.close
-    }
-    input.close
-  }
-
-  // supported compression
-  def gzip(input: InputStream,
-    charset: Charset = StandardCharsets.UTF_8 ): Reader = {
-    val gzipStream = new GZIPInputStream(input)
-    new InputStreamReader(gzipStream, charset)
-  }
-
-  def buffered(reader: Reader): BufferedReader =
-    new BufferedReader(reader)
-
-  // local file system support
-  def fromLocal(path: String): InputStream =
+class LocalFS extends FS {
+  def source(path: String): InputStream =
     new FileInputStream(path)
 
-  def toLocal(path: String): PrintWriter =
+  def sink(path: String): PrintWriter =
     new PrintWriter(new FileOutputStream(path))
+}
 
-  // hdfs file system support
-  def hdfsFileSystem(path: String)
-    (rootURI: String =HDFSDefaultRootURI,
-      user: String = HDFSDefaultUser,
-      home: String = HDFSDefaultHome): HDFSFileSystem = {
-    val conf = new Configuration
-    conf.set("fs.defaultFS", rootURI)
-    conf.set("fs.hdfs.impl",
-      classOf[org.apache.hadoop.hdfs.DistributedFileSystem].getName())
-    conf.set("fs.file.impl",
-      classOf[org.apache.hadoop.fs.LocalFileSystem].getName())
-    // Set HADOOP user
-    System.setProperty("HADOOP_USER_NAME", user)
-    System.setProperty("hadoop.home.dir", home)
-    //Get the filesystem - HDFS
-    HDFSFileSystem.get(URI.create(rootURI), conf)
-  }
+class S3OutputStream(s3Client: S3Client,
+    bucket: String, key: String) extends OutputStream {
 
-  def fromHDFS(fs: HDFSFileSystem, path: String): InputStream =
-    fs.open(new HDFSPath(path))
+  private val tmpFile = Files.createTempFile("s3-output", "tmp")
+  private val out = new FileOutputStream(tmpFile.toString)
 
-  def toHDFS(fs: HDFSFileSystem, path: String): PrintWriter =
-    new PrintWriter(fs.create(new HDFSPath(path)))
-
-  // S3 support
-  def fromS3(bucket: String, key: String,
-    region: Region): InputStream = {
-    val s3Client = S3Client.builder().region(region).build();
-    s3Client.getObject (
-      GetObjectRequest.builder
-        .bucket(bucket)
-        .key(key)
-        .build
-    )
-  }
-
-  def toS3(file: Path, bucket: String, key: String,
-    region: Region): PutObjectResponse = {
-    val s3Client = S3Client.builder().region(region).build();
+  private[splitter] def commit(): PutObjectResponse = {
+    out.close
     s3Client.putObject(
       PutObjectRequest.builder()
         .bucket(bucket).key(key)
        .build(),
-     file)
+     tmpFile)
   }
 
+  override def write(value: Int): Unit = out.write(value)
+  override def close(): Unit = {
+    out.close
+    commit
+    tmpFile.toFile.delete
+  }
+}
+
+object App {
+  class HDFS(rootURI: String =HDFSDefaultRootURI,
+        user: String = HDFSDefaultUser,
+        home: String = HDFSDefaultHome) extends FS {
+
+    private val fileSystem: HDFSFileSystem = {
+      val conf = new Configuration
+      conf.set("fs.defaultFS", rootURI)
+      conf.set("fs.hdfs.impl",
+        classOf[org.apache.hadoop.hdfs.DistributedFileSystem].getName())
+      conf.set("fs.file.impl",
+        classOf[org.apache.hadoop.fs.LocalFileSystem].getName())
+      // Set HADOOP user
+      System.setProperty("HADOOP_USER_NAME", user)
+      System.setProperty("hadoop.home.dir", home)
+      //Get the filesystem - HDFS
+      HDFSFileSystem.get(URI.create(rootURI), conf)
+    }
+
+    def source(path: String): InputStream =
+      fileSystem.open(new HDFSPath(path))
+
+    def sink(path: String): PrintWriter =
+      new PrintWriter(fileSystem.create(new HDFSPath(path)))
+  }
+
+  class S3(region: Region) extends FS {
+    val s3Client = S3Client.builder().region(region).build();
+
+    def bucket(path: String): String =
+      URI.create(path).getHost
+
+    def key(path: String): String =
+      URI.create(path).getPath
+
+    // S3 support
+    def source(file: String): InputStream = {
+      s3Client.getObject (
+        GetObjectRequest.builder
+          .bucket(bucket(file))
+          .key(key(file))
+          .build
+      )
+    }
+
+    def sink(file: String): PrintWriter = {
+      new PrintWriter(new S3OutputStream(s3Client, bucket(file), key(file)))
+    }
+  }
+
+  val HDFSDefaultRootURI = "hdfs://localhost:8020"
+  val HDFSDefaultUser = "hdfs"
+  val HDFSDefaultHome = "/"
+
+  object Splitter {
+
+    def split(input: BufferedReader, printers: Array[PrintWriter]): Unit = {
+      var sinkIndex = 0
+      input.lines.forEach { line =>
+        printers(sinkIndex).println(line)
+        sinkIndex = (sinkIndex + 1) % printers.length
+      }
+      printers.foreach { printer =>
+        printer.flush
+        printer.close
+      }
+      input.close
+    }
+  }
+
+  object Compression {
+    // supported compression
+    def gzip(input: InputStream,
+      charset: Charset = StandardCharsets.UTF_8 ): Reader = {
+      val gzipStream = new GZIPInputStream(input)
+      new InputStreamReader(gzipStream, charset)
+    }
+  }
+
+  implicit class ReaderExt(self: Reader) {
+    def buffered: BufferedReader =
+      new BufferedReader(self)
+  }
+
+  implicit class BufferedReaderExt(self: BufferedReader) {
+    def sinks(printers: Array[PrintWriter]): Unit =
+      Splitter.split(self, printers)
+  }
+
+  implicit class InputStreamExt(self: InputStream) {
+    def gzip(charset: Charset): Reader =
+      Compression.gzip(self, charset)
+
+    def gzip: Reader =
+      this.gzip(StandardCharsets.UTF_8)
+  }
+
+
   def main(args: Array[String]): Unit = {
-    val tmpPaths = (0 until 10).map { i =>
-      f"/tmp/part-$i%03d"
+    val printers = (0 until 10).map { index =>
+      new S3(Region.US_WEST_2).sink(s"s3://this/$index")
     }
-    val tmpOutputStreams = tmpPaths.map { path =>
-      toLocal(path)
-    }
-    val input = buffered(gzip(fromS3("here", "there", null)))
-    split(input, tmpOutputStreams.toArray)
-    tmpPaths.foreach(p => toS3(FileSystems.getDefault.getPath(p), "", "", null))
+
+    new S3(Region.US_WEST_2)
+      .source("s3://here/there")
+      .gzip
+      .buffered
+      .sinks(printers.toArray)
   }
 }
