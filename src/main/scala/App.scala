@@ -139,6 +139,9 @@ object App {
   implicit class ReaderExt(self: Reader) {
     def buffered: BufferedReader =
       new BufferedReader(self)
+
+    def sinks(printers: Array[PrintWriter]): Unit =
+      buffered.sinks(printers)
   }
 
   implicit class BufferedReaderExt(self: BufferedReader) {
@@ -152,6 +155,12 @@ object App {
 
     def gzip: Reader =
       this.gzip(StandardCharsets.UTF_8)
+
+    def buffered: BufferedReader =
+      new BufferedReader(new InputStreamReader(self))
+
+    def sinks(printers: Array[PrintWriter]): Unit =
+      buffered.sinks(printers)
   }
 
 
