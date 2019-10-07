@@ -18,6 +18,7 @@ case class Config(
   outputHdfsRootURI: Option[String] = None,
   outputHdfsUser: Option[String] = None,
   outputHdfsHome: Option[String] = None,
+  keepOrder: Boolean = false,
   numberOfParts: Int = 1
 )
 
@@ -108,6 +109,10 @@ object ParseArgs {
     opt[String]("output-hdfs-home-dir")
       .action((x, c) => c.copy(outputHdfsHome = Some(x)))
       .text(s"Output HDFS home directory. Default: $HDFSDefaultHome")
+
+    opt[Boolean]("keep-order")
+      .action((x, c) => c.copy(keepOrder = x))
+      .text("Keep the order of the input lines. That is first n lines go to the first file and so on. This might generate files with uneven sizes")
 
     opt[Int]('n', "number-of-files")
       .required

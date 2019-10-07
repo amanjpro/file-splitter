@@ -12,9 +12,10 @@ class LocalFS extends FS {
 
   def separator: String = File.separator
 
-
   def extractFilePath(path: String): String =
     path.replace("file://", "")
+
+  def size(path: String): Long = new File(path).length
 }
 
 

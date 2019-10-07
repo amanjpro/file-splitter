@@ -5,6 +5,7 @@ import java.io.{Reader, InputStream, BufferedReader, Writer,
 import java.nio.charset.{Charset, StandardCharsets}
 import me.amanj.file.splitter.compression.Compression
 import me.amanj.file.splitter.Splitter
+import me.amanj.file.splitter.fs.FS
 
 object Implicits {
   implicit class ReaderExt(self: Reader) {
@@ -21,6 +22,17 @@ object Implicits {
 
     def sinks(printers: Array[OutputStream]): Unit =
       Splitter.split(self, printers.map(_.printer))
+
+    def ordered(implicit fs: FS, path: String): Splitter.OrderedSplitter =
+      new Splitter.OrderedSplitter(self, fs.size(path))
+  }
+
+  implicit class OrderedSplitterExt(self: Splitter.OrderedSplitter) {
+    def sinks(printers: Array[PrintWriter]): Unit =
+      self.split(printers)
+
+    def sinks(printers: Array[OutputStream])(): Unit =
+      self.split(printers.map(_.printer))
   }
 
   implicit class InputStreamExt(self: InputStream) {

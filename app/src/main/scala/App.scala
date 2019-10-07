@@ -34,7 +34,8 @@ object App {
   def main(args: Array[String]): Unit = {
     ParseArgs.parser.parse(args, Config()) match {
       case Some(config) =>
-        val inputFS = getInputFS(config)
+        implicit val inputFile = config.inputFile
+        implicit val inputFS = getInputFS(config)
         val outputFS = getOutputFS(config)
         val partNames =
           getPartNames(config.outputDir, outputFS.separator,
@@ -43,7 +44,10 @@ object App {
         val src = getSource(config, inputFS)
         val dest = getSinks(config, partNames, outputFS)
 
-        src.sinks(dest.toArray)
+        if(config.keepOrder)
+          src.ordered.sinks(dest.toArray)
+        else
+          src.sinks(dest.toArray)
       case _            => // do nothing
     }
   }

@@ -7,8 +7,9 @@ import java.nio.file.Files
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.{GetObjectRequest,
-  PutObjectResponse, PutObjectRequest}
+  PutObjectResponse, PutObjectRequest, ListObjectsRequest}
 import software.amazon.awssdk.core.sync.ResponseTransformer
+import scala.collection.JavaConverters._
 
 class S3(region: Region) extends FS {
   val s3Client = S3Client.builder().region(region).build();
@@ -36,6 +37,13 @@ class S3(region: Region) extends FS {
   def separator: String = "/"
 
   def extractFilePath(path: String): String = path
+
+  def size(path: String): Long = s3Client.listObjects(
+      ListObjectsRequest.builder
+        .bucket(bucket(path))
+        .marker(key(path))
+        .build
+    ).contents.asScala.foldLeft(0L)(_ + _.size)
 }
 object S3 {
   class S3OutputStream(s3Client: S3Client,

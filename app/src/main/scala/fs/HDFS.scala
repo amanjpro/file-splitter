@@ -33,4 +33,6 @@ class HDFS(rootURI: String = HDFSDefaultRootURI,
     fileSystem.create(new Path(path))
 
   def separator: String = Path.SEPARATOR
+  def size(path: String) =
+    fileSystem.getFileStatus(new Path(path)).getLen
 }
