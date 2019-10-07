@@ -3,7 +3,7 @@ package me.amanj.file.splitter
 import java.io.{BufferedReader, PrintWriter}
 
 object Splitter {
-  class OrderedSplitter(input: BufferedReader, size: Long) {
+  class Ordered(input: BufferedReader, size: Long) {
     def split(printers: Array[PrintWriter]): Unit = {
       val cutoff = size / printers.size
       var sinkIndex = 0
@@ -23,16 +23,18 @@ object Splitter {
       input.close
     }
   }
-  def split(input: BufferedReader, printers: Array[PrintWriter]): Unit = {
-    var sinkIndex = 0
-    input.lines.forEach { line =>
-      printers(sinkIndex).println(line)
-      sinkIndex = (sinkIndex + 1) % printers.length
+  class Unordered(input: BufferedReader) {
+    def split(printers: Array[PrintWriter]): Unit = {
+      var sinkIndex = 0
+      input.lines.forEach { line =>
+        printers(sinkIndex).println(line)
+        sinkIndex = (sinkIndex + 1) % printers.length
+      }
+      printers.foreach { printer =>
+        printer.flush
+        printer.close
+      }
+      input.close
     }
-    printers.foreach { printer =>
-      printer.flush
-      printer.close
-    }
-    input.close
   }
 }

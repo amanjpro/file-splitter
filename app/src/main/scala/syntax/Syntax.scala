@@ -18,16 +18,16 @@ object Implicits {
 
   implicit class BufferedReaderExt(self: BufferedReader) {
     def sinks(printers: Array[PrintWriter]): Unit =
-      Splitter.split(self, printers)
+      new Splitter.Unordered(self).split(printers)
 
     def sinks(printers: Array[OutputStream]): Unit =
-      Splitter.split(self, printers.map(_.printer))
+      new Splitter.Unordered(self).split(printers.map(_.printer))
 
-    def ordered(implicit fs: FS, path: String): Splitter.OrderedSplitter =
-      new Splitter.OrderedSplitter(self, fs.size(path))
+    def ordered(implicit fs: FS, path: String): Splitter.Ordered =
+      new Splitter.Ordered(self, fs.size(path))
   }
 
-  implicit class OrderedSplitterExt(self: Splitter.OrderedSplitter) {
+  implicit class OrderedSplitterExt(self: Splitter.Ordered) {
     def sinks(printers: Array[PrintWriter]): Unit =
       self.split(printers)
 
