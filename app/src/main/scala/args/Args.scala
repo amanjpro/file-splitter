@@ -1,5 +1,6 @@
 package me.amanj.file.splitter.args
 
+import me.amanj.file.splitter.compression.Compression
 import me.amanj.file.splitter.fs._
 import java.io.File
 import scopt.OptionParser
@@ -25,21 +26,15 @@ case class Config(
 object ParseArgs {
   def processCompression(original: Config,
       action: Config => Config,
-      compression: String): Config = {
-    compression match {
-      case "none" => original
-      case "gzip" => action(original)
-    }
-  }
+      compression: String): Config =
+    if(compression != "none") action(original)
+    else original
 
   def validateCompression(value: String,
       success: => Either[String, Unit],
       failure: String => Either[String, Unit]): Either[String, Unit] =
-    value match {
-      case "none" |
-           "gzip" => success
-      case _      => failure(s"Unsupported compression type: $value")
-    }
+    Compression.supportedCompressions.find(_ == value).map(_ => success)
+      .getOrElse(failure(s"Unsupported compression type: $value"))
 
   def validateFS(value: String,
       success: => Either[String, Unit],

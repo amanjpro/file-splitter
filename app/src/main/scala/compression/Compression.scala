@@ -19,4 +19,6 @@ object Compression {
     val gzipStream = new GZIPOutputStream(input)
     new OutputStreamWriter(gzipStream, charset)
   }
+
+  val supportedCompressions = Seq("none", "gzip")
 }
