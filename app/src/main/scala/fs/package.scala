@@ -41,7 +41,7 @@ package object fs {
     else if(config.outputDir.startsWith("s3://"))
       config.s3OutputRegion.map(new S3(_)) match {
         case Some(fs) => fs
-        case _        => throw new MatchError("Please provide input S3 region")
+        case _        => throw new MatchError("Please provide output S3 region")
       }
     else
       throw new MatchError(s"Unsupported file system ${config.outputDir}")
