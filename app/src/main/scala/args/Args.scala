@@ -114,7 +114,11 @@ object ParseArgs {
       .text("Number of output files, default is 1.")
 
     checkConfig( c =>
-      if (c.input == "stdin" && c.keepOrder)
+      if (c.output == "stdin")
+        failure("Cannot write to stdin")
+      else if (c.input == "stdout")
+        failure("Cannot read from stdout")
+      else if (c.input == "stdin" && c.keepOrder)
         failure("When input is stdin, --keep-order cannot be provided")
       else if (c.output == "stdout" && c.numberOfParts != 1)
         failure("When output is stdout, --number-of-files can only be 1")
