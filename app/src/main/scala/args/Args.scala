@@ -58,13 +58,13 @@ object ParseArgs {
       .required
       .validate(x => validateFS(x, success, failure))
       .action((x, c) => c.copy(input = x))
-      .text("The file to be splitted. At this point, S3, local FS and HDFS are supported exmples: hdfs://..., s3://... and file:://...")
+      .text("The file to be splitted. At this point, S3, local FS and HDFS are supported. The job can also read from stdin by simply passing 'stdin' as the input. Exmples: hdfs://..., s3://... and file:://...")
 
     opt[String]('o', "output")
       .required
       .validate(x => validateFS(x, success, failure))
       .action((x, c) => c.copy(output = x))
-      .text("The directory where the splitted parts should go. At this point, S3, local FS and HDFS are supported exmples: hdfs://..., s3://... and file:://...")
+      .text("The directory where the splitted parts should go. At this point, S3, local FS and HDFS are supported. The job can also write to stdout by simply passing 'stdout' here. Exmples: hdfs://..., s3://... and file:://...")
 
     opt[String]('x', "input-compression")
       .validate(x => validateCompression(x, success, failure _))
