@@ -115,8 +115,7 @@ object ParseArgs {
       .text("Keep the order of the input lines. That is first n lines go to the first file and so on. This might generate files with uneven sizes")
 
     opt[Int]('n', "number-of-files")
-      .required
       .action((x, c) => c.copy(numberOfParts = x))
-      .text("Number of output files.")
+      .text("Number of output files, default is 1.")
   }
 }

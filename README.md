@@ -24,7 +24,7 @@ A very simple utility to split large files into smaller ones.
   ```
 - You can leverage stdin/stdout to apply transformations on the lines:
   ```sh
-  bin/splitter -i file:///tmp/path-to-input.txt -o stdout -n 1 | \
+  bin/splitter -i file:///tmp/path-to-input.txt -o stdout | \
     sed s/splitter/file-splitter/g | \
     bin/splitter -i stdin -o file:///tmp/parts -n 9
   ```
