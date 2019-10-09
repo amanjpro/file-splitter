@@ -117,5 +117,38 @@ object ParseArgs {
     opt[Int]('n', "number-of-files")
       .action((x, c) => c.copy(numberOfParts = x))
       .text("Number of output files, default is 1.")
+
+    checkConfig( c =>
+      if (c.input == "stdin" && c.keepOrder)
+        failure("When input is stdin, --keep-order cannot be provided")
+      else if (c.output == "stdout" && c.numberOfParts != 1)
+        failure("When output is stdout, --number-of-files can only be 1")
+      else if (c.input.startsWith("s3://") && c.s3InputRegion.isEmpty)
+        failure("When input is s3, --s3-input-region should be provided")
+      else if (!c.input.startsWith("s3://") && c.s3InputRegion.isDefined)
+        failure("Only when input is s3, --s3-input-region should be provided")
+      else if (c.output.startsWith("s3://") && c.s3OutputRegion.isEmpty)
+        failure("When output is s3, --s3-output-region should be provided")
+      else if (!c.output.startsWith("s3://") && c.s3OutputRegion.isDefined)
+        failure("Only when output is s3, --s3-output-region should be provided")
+      else if (c.input.startsWith("hdfs://") && (
+        c.inputHdfsHome.isEmpty || c.inputHdfsUser.isEmpty
+          || c.inputHdfsRootURI.isEmpty))
+        failure("When input is hdfs, --input-hdfs-home-dir, --input-hdfs-user, and --input-hdfs-root-uri should be provided")
+      else if (!c.input.startsWith("hdfs://") && (
+        c.inputHdfsHome.isDefined || c.inputHdfsUser.isDefined
+          || c.inputHdfsRootURI.isDefined))
+        failure("Only when input is hdfs, --input-hdfs-home-dir, --input-hdfs-user, and --input-hdfs-root-uri should be provided")
+      else if (c.output.startsWith("hdfs://") && (
+        c.outputHdfsHome.isEmpty || c.outputHdfsUser.isEmpty
+          || c.outputHdfsRootURI.isEmpty))
+        failure("When output is hdfs, --output-hdfs-home-dir, --output-hdfs-user, and --output-hdfs-root-uri should be provided")
+      else if (!c.output.startsWith("hdfs://") && (
+        c.outputHdfsHome.isDefined || c.outputHdfsUser.isDefined
+          || c.outputHdfsRootURI.isDefined))
+        failure("Only when output is hdfs, --output-hdfs-home-dir, --output-hdfs-user, and --output-hdfs-root-uri should be provided")
+
+      else success
+    )
   }
 }
