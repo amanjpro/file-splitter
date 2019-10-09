@@ -28,3 +28,53 @@ A very simple utility to split large files into smaller ones.
     sed s/splitter/file-splitter/g | \
     bin/splitter -i stdin -o file:///tmp/parts -n 9
   ```
+
+## Supported options
+
+```
+$ bin/splitter --help
+file-splitter-app 0.3.0-SNAPSHOT
+Usage: file-splitter-app [options]
+
+  -i <value> | --input <value>
+        The file to be splitted. At this point, S3, local FS
+        and HDFS are supported. The job can also read from stdin
+        by simply passing 'stdin' as the input.
+        Exmples: hdfs://..., s3://... and file://...
+  -o <value> | --output <value>
+        The directory where the splitted parts should go.
+        At this point, S3, local FS and HDFS are supported.
+        The job can also write to stdout by simply passing
+        'stdout' here. Exmples: hdfs://..., s3://...
+        and file://...
+  -x <value> | --input-compression <value>
+        Input file compression formatSupported compressions:
+        none, gzip. Default: none
+  -z <value> | --output-compression <value>
+        Output file compression format Supported compressions:
+        none, gzip Default: none
+  --s3-input-region <value>
+        Input S3 Region. Required when dealing with S3 paths only.
+  --s3-output-region <value>
+        Output S3 Region. Required when dealing with S3 paths only.
+  --input-hdfs-root-uri <value>
+        Input HDFS root URI. Default: hdfs://localhost:8020
+  --input-hdfs-user <value>
+        Input HDFS user. Default: hdfs
+  --input-hdfs-home-dir <value>
+        Input HDFS home directory. Default: /
+  --output-hdfs-root-uri <value>
+        Output HDFS root URI. Default: hdfs://localhost:8020
+  --output-hdfs-user <value>
+        Output HDFS user. Default: hdfs
+  --output-hdfs-home-dir <value>
+        Output HDFS home directory. Default: /
+  --keep-order <value>
+        Keep the order of the input lines. That is first n
+        lines go to the first file and so on. This might
+        generate files with uneven sizes
+  -n <value> | --number-of-files <value>
+        Number of output files, default is 1.
+  --help
+        prints this usage text
+```
