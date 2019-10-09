@@ -6,8 +6,8 @@ import scopt.OptionParser
 import software.amazon.awssdk.regions.Region
 
 case class Config(
-  inputFile: String = "",
-  outputDir: String = "",
+  input: String = "",
+  output: String = "",
   inputCompression: Option[String] = None,
   outputCompression: Option[String] = None,
   s3InputRegion: Option[Region] = None,
@@ -54,16 +54,16 @@ object ParseArgs {
     override def renderingMode = scopt.RenderingMode.OneColumn
     head(pkg.getImplementationTitle(), pkg.getImplementationVersion())
 
-    opt[String]('i', "input-file")
+    opt[String]('i', "input")
       .required
       .validate(x => validateFS(x, success, failure))
-      .action((x, c) => c.copy(inputFile = x))
+      .action((x, c) => c.copy(input = x))
       .text("The file to be splitted. At this point, S3, local FS and HDFS are supported exmples: hdfs://..., s3://... and file:://...")
 
-    opt[String]('o', "output-dir")
+    opt[String]('o', "output")
       .required
       .validate(x => validateFS(x, success, failure))
-      .action((x, c) => c.copy(outputDir = x))
+      .action((x, c) => c.copy(output = x))
       .text("The directory where the splitted parts should go. At this point, S3, local FS and HDFS are supported exmples: hdfs://..., s3://... and file:://...")
 
     opt[String]('x', "input-compression")

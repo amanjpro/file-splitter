@@ -10,8 +10,8 @@ package object fs {
   val SupportedFS = Seq("hdfs://", "file://", "s3://")
 
   def getInputFS(config: Config): FS = {
-    if(config.inputFile.startsWith("file://")) new LocalFS
-    else if(config.inputFile.startsWith("hdfs://")) {
+    if(config.input.startsWith("file://")) new LocalFS
+    else if(config.input.startsWith("hdfs://")) {
       val maybeFS = for {
         root <- config.inputHdfsRootURI
         user <- config.inputHdfsUser
@@ -19,18 +19,18 @@ package object fs {
       } yield new HDFS(root, user, home)
       maybeFS.getOrElse(new HDFS)
     }
-    else if(config.inputFile.startsWith("s3://"))
+    else if(config.input.startsWith("s3://"))
       config.s3InputRegion.map(new S3(_)) match {
         case Some(fs) => fs
         case _        => throw new MatchError("Please provide input S3 region")
       }
     else
-      throw new MatchError(s"Unsupported file system ${config.inputFile}")
+      throw new MatchError(s"Unsupported file system ${config.input}")
   }
 
   def getOutputFS(config: Config): FS = {
-    if(config.outputDir.startsWith("file://")) new LocalFS
-    else if(config.outputDir.startsWith("hdfs://")) {
+    if(config.output.startsWith("file://")) new LocalFS
+    else if(config.output.startsWith("hdfs://")) {
       val maybeFS = for {
         root <- config.outputHdfsRootURI
         user <- config.outputHdfsUser
@@ -38,13 +38,13 @@ package object fs {
       } yield new HDFS(root, user, home)
       maybeFS.getOrElse(new HDFS)
     }
-    else if(config.outputDir.startsWith("s3://"))
+    else if(config.output.startsWith("s3://"))
       config.s3OutputRegion.map(new S3(_)) match {
         case Some(fs) => fs
         case _        => throw new MatchError("Please provide output S3 region")
       }
     else
-      throw new MatchError(s"Unsupported file system ${config.outputDir}")
+      throw new MatchError(s"Unsupported file system ${config.output}")
   }
 }
 

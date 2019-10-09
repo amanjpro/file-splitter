@@ -11,7 +11,7 @@ object App {
     (0 until parts).map(i => f"$base${sep}part-$i%05d")
 
   def getSource(config: Config, fs: FS): BufferedReader = {
-    val path = fs.extractFilePath(config.inputFile)
+    val path = fs.extractFilePath(config.input)
     config.inputCompression match {
       case Some("gzip") =>
         fs.source(path).gzip.buffered
@@ -34,11 +34,11 @@ object App {
   def main(args: Array[String]): Unit = {
     ParseArgs.parser.parse(args, Config()) match {
       case Some(config) =>
-        implicit val inputFile = config.inputFile
+        implicit val input = config.input
         implicit val inputFS = getInputFS(config)
         val outputFS = getOutputFS(config)
         val partNames =
-          getPartNames(config.outputDir, outputFS.separator,
+          getPartNames(config.output, outputFS.separator,
             config.numberOfParts)
 
         val src = getSource(config, inputFS)
