@@ -2,10 +2,11 @@
 
 A very simple utility to split large files into smaller ones.
 
-## Supported file systems:
+## Supported IO (file?) systems:
   - Local file system
   - HDFS
   - S3
+  - StdIn/StdOut
 
 ## Supported compressions:
   - No compression
@@ -20,4 +21,10 @@ A very simple utility to split large files into smaller ones.
   ```sh
   bin/splitter -i file:///tmp/path-to-input.gz -o \
     s3://my-bucket/my-key --s3-output-region us-west-2 -n 3 -x gzip -z gzip
+  ```
+- You can leverage stdin/stdout to apply transformations on the lines:
+  ```sh
+  bin/splitter -i file:///tmp/path-to-input.txt -o stdout -n 1 | \
+    sed s/splitter/file-splitter/g | \
+    bin/splitter -i stdin -o file:///tmp/parts -n 9
   ```
