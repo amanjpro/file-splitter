@@ -24,6 +24,7 @@ case class Config(
 )
 
 object ParseArgs {
+  val pad = " " * 8
   def processCompression(original: Config,
       action: Config => Config,
       compression: String): Config =
@@ -53,25 +54,42 @@ object ParseArgs {
       .required
       .validate(x => validateFS(x, success, failure))
       .action((x, c) => c.copy(input = x))
-      .text("The file to be splitted. At this point, S3, local FS and HDFS are supported. The job can also read from stdin by simply passing 'stdin' as the input. Exmples: hdfs://..., s3://... and file://...")
+      .text {
+        s"""|The file to be splitted. At this point, S3, local FS
+            |${pad}and HDFS are supported. The job can also read from stdin
+            |${pad}by simply passing 'stdin' as the input.
+            |${pad}Exmples: hdfs://..., s3://... and file://...""".stripMargin
+      }
 
     opt[String]('o', "output")
       .required
       .validate(x => validateFS(x, success, failure))
       .action((x, c) => c.copy(output = x))
-      .text("The directory where the splitted parts should go. At this point, S3, local FS and HDFS are supported. The job can also write to stdout by simply passing 'stdout' here. Exmples: hdfs://..., s3://... and file://...")
+      .text {
+        s"""|The directory where the splitted parts should go.
+            |${pad}At this point, S3, local FS and HDFS are supported.
+            |${pad}The job can also write to stdout by simply passing
+            |${pad}'stdout' here. Exmples: hdfs://..., s3://...
+            |${pad}and file://...""".stripMargin
+      }
 
     opt[String]('x', "input-compression")
       .validate(x => validateCompression(x, success, failure _))
       .action((x, c) =>
           processCompression(c, _.copy(inputCompression = Some(x)), x))
-      .text("Input file compression formatSupported compressions: none, gzip. Default: none")
+      .text {
+        s"""|Input file compression formatSupported compressions:
+            |${pad}none, gzip. Default: none""".stripMargin
+      }
 
     opt[String]('z', "output-compression")
       .validate(x => validateCompression(x, success, failure _))
       .action((x, c) =>
           processCompression(c, _.copy(outputCompression = Some(x)), x))
-      .text("Output file compression format Supported compressions: none, gzip Default: none")
+      .text {
+        s"""|Output file compression format Supported compressions:
+            |${pad}none, gzip Default: none""".stripMargin
+      }
 
     opt[String]("s3-input-region")
       .action((x, c) => c.copy(s3InputRegion = Some(Region.of(x))))
@@ -107,11 +125,17 @@ object ParseArgs {
 
     opt[Boolean]("keep-order")
       .action((x, c) => c.copy(keepOrder = x))
-      .text("Keep the order of the input lines. That is first n lines go to the first file and so on. This might generate files with uneven sizes")
+      .text {
+        s"""|Keep the order of the input lines. That is first n
+            |${pad}lines go to the first file and so on. This might
+            |${pad}generate files with uneven sizes""".stripMargin
+      }
 
     opt[Int]('n', "number-of-files")
       .action((x, c) => c.copy(numberOfParts = x))
       .text("Number of output files, default is 1.")
+
+    help("help").text("prints this usage text")
 
     checkConfig( c =>
       if (c.output == "stdin")
@@ -133,19 +157,27 @@ object ParseArgs {
       else if (c.input.startsWith("hdfs://") && (
         c.inputHdfsHome.isEmpty || c.inputHdfsUser.isEmpty
           || c.inputHdfsRootURI.isEmpty))
-        failure("When input is hdfs, --input-hdfs-home-dir, --input-hdfs-user, and --input-hdfs-root-uri should be provided")
+        failure(
+          """|When input is hdfs, --input-hdfs-home-dir, --input-hdfs-user,
+             |and --input-hdfs-root-uri should be provided""".stripMargin)
       else if (!c.input.startsWith("hdfs://") && (
         c.inputHdfsHome.isDefined || c.inputHdfsUser.isDefined
           || c.inputHdfsRootURI.isDefined))
-        failure("Only when input is hdfs, --input-hdfs-home-dir, --input-hdfs-user, and --input-hdfs-root-uri should be provided")
+        failure(
+          """|Only when input is hdfs, --input-hdfs-home-dir, --input-hdfs-user,
+             |and --input-hdfs-root-uri should be provided""".stripMargin)
       else if (c.output.startsWith("hdfs://") && (
         c.outputHdfsHome.isEmpty || c.outputHdfsUser.isEmpty
           || c.outputHdfsRootURI.isEmpty))
-        failure("When output is hdfs, --output-hdfs-home-dir, --output-hdfs-user, and --output-hdfs-root-uri should be provided")
+        failure(
+          """|When output is hdfs, --output-hdfs-home-dir, --output-hdfs-user,
+             |and --output-hdfs-root-uri should be provided""".stripMargin)
       else if (!c.output.startsWith("hdfs://") && (
         c.outputHdfsHome.isDefined || c.outputHdfsUser.isDefined
           || c.outputHdfsRootURI.isDefined))
-        failure("Only when output is hdfs, --output-hdfs-home-dir, --output-hdfs-user, and --output-hdfs-root-uri should be provided")
+        failure(
+          """|Only when output is hdfs, --output-hdfs-home-dir,--output-hdfs-user,
+             |and --output-hdfs-root-uri should be provided""".stripMargin)
 
       else success
     )
