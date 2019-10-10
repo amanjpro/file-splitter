@@ -1,5 +1,7 @@
 # File Splitter
 
+[![Build Status](https://travis-ci.org/amanjpro/file-splitter.svg?branch=master)](https://travis-ci.org/amanjpro/file-splitter) [![codecov](https://codecov.io/gh/amanjpro/file-splitter/branch/master/graph/badge.svg)](https://codecov.io/gh/amanjpro/file-splitter)
+
 A very simple utility to split large files into smaller ones.
 
 ## Supported IO (file?) systems:
