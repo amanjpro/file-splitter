@@ -16,7 +16,7 @@ class HDFSSpec extends FlatSpec with Matchers {
   }
 
   "extractFilePath" should "not remove non-leading hdfs:// from path" in {
-    new HDFS().extractFilePath("yay://hdfs://file_name") shouldBe "hdfs://file_name"
+    new HDFS().extractFilePath("yay://hdfs://file_name") shouldBe "yay://hdfs://file_name"
   }
 }
 
