@@ -3,7 +3,7 @@ language: scala
 jdk: openjdk8
 
 scala:
-   - 2.13.1
+   - 2.13.0
 
 script:
   - sbt ++$TRAVIS_SCALA_VERSION clean coverage test coverageReport package
