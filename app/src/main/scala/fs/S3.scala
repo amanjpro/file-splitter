@@ -1,6 +1,5 @@
 package me.amanj.file.splitter.fs
 
-import java.net.URI
 import java.io.{InputStream, PrintWriter, OutputStream, FileOutputStream}
 import java.nio.file.Files
 
@@ -14,11 +13,18 @@ import scala.collection.JavaConverters._
 class S3(region: Region) extends FS {
   val s3Client = S3Client.builder().region(region).build();
 
-  def bucket(path: String): String =
-    URI.create(path).getHost
+  private val scheme = "s3://"
+  private val bucket = "[^/]+"
+  private val key = ".*"
+  private val S3Regex = s"$scheme($bucket)/?($key)".r
 
-  def key(path: String): String =
-    URI.create(path).getPath
+  def bucket(path: String): String = path match {
+    case S3Regex(bucket, _) => bucket
+  }
+
+  def key(path: String): String = path match {
+    case S3Regex(_, key) => key
+  }
 
   // S3 support
   def source(file: String): InputStream = {
