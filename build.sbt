@@ -13,7 +13,7 @@ name := ProjectName
 scalaVersion in ThisBuild := ProjectScalaVersion
 crossPaths in ThisBuild := false
 publishMavenStyle in ThisBuild := true
-version in ThisBuild := "0.2.1"
+version in ThisBuild := "0.3.0-SNAPSHOT"
 coverageEnabled in ThisBuild := true
 
 def project(baseDir: String, plugin: Option[AutoPlugin] = None): Project = {
