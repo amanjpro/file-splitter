@@ -35,8 +35,8 @@ A very simple utility to split large files into smaller ones.
 
 ```
 $ bin/splitter --help
-file-splitter-app 0.3.0-SNAPSHOT
-Usage: file-splitter-app [options]
+splitter 0.3.0-SNAPSHOT
+Usage: splitter [options]
 
   -i <value> | --input <value>
         The file to be splitted. At this point, S3, local FS
