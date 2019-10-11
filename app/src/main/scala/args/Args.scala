@@ -48,7 +48,7 @@ object ParseArgs {
   val pkg = getClass.getPackage
   val parser = new OptionParser[Config](pkg.getImplementationTitle()) {
     override def renderingMode = scopt.RenderingMode.OneColumn
-    head(pkg.getImplementationTitle(), pkg.getImplementationVersion())
+    head("splitter", pkg.getImplementationVersion())
 
     opt[String]('i', "input")
       .required
