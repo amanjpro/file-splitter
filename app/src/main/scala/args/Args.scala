@@ -16,9 +16,13 @@ case class Config(
   inputHdfsRootURI: Option[String] = None,
   inputHdfsUser: Option[String] = None,
   inputHdfsHome: Option[String] = None,
+  inputSftpUsername: Option[String] = None,
+  inputSftpPassword: Option[String] = None,
   outputHdfsRootURI: Option[String] = None,
   outputHdfsUser: Option[String] = None,
   outputHdfsHome: Option[String] = None,
+  outputSftpUsername: Option[String] = None,
+  outputSftpPassword: Option[String] = None,
   keepOrder: Boolean = false,
   numberOfParts: Int = 1
 )
@@ -46,7 +50,7 @@ object ParseArgs {
   }
 
   val pkg = getClass.getPackage
-  val parser = new OptionParser[Config](pkg.getImplementationTitle()) {
+  val parser = new OptionParser[Config]("splitter") {
     override def renderingMode = scopt.RenderingMode.OneColumn
     head("splitter", pkg.getImplementationVersion())
 
@@ -55,10 +59,11 @@ object ParseArgs {
       .validate(x => validateFS(x, success, failure))
       .action((x, c) => c.copy(input = x))
       .text {
-        s"""|The file to be splitted. At this point, S3, local FS
+        s"""|The file to be splitted. At this point, S3, local FS, Sftp
             |${pad}and HDFS are supported. The job can also read from stdin
             |${pad}by simply passing 'stdin' as the input.
-            |${pad}Exmples: hdfs://..., s3://... and file://...""".stripMargin
+            |${pad}Exmples: hdfs://..., s3://..., sftp://... and file://..."""
+              .stripMargin
       }
 
     opt[String]('o', "output")
@@ -67,9 +72,9 @@ object ParseArgs {
       .action((x, c) => c.copy(output = x))
       .text {
         s"""|The directory where the splitted parts should go.
-            |${pad}At this point, S3, local FS and HDFS are supported.
+            |${pad}At this point, S3, local FS, Sftp and HDFS are supported.
             |${pad}The job can also write to stdout by simply passing
-            |${pad}'stdout' here. Exmples: hdfs://..., s3://...
+            |${pad}'stdout' here. Exmples: hdfs://..., s3://..., sftp://...
             |${pad}and file://...""".stripMargin
       }
 
@@ -90,6 +95,22 @@ object ParseArgs {
         s"""|Output file compression format Supported compressions:
             |${pad}none, gzip Default: none""".stripMargin
       }
+
+    opt[String]("input-sftp-username")
+      .action((x, c) => c.copy(inputSftpUsername = Some(x)))
+      .text("Input sftp username. Required when input is sftp.")
+
+    opt[String]("input-sftp-password")
+      .action((x, c) => c.copy(inputSftpPassword = Some(x)))
+      .text("Input sftp password. Required when input is sftp.")
+
+    opt[String]("output-sftp-username")
+      .action((x, c) => c.copy(outputSftpUsername = Some(x)))
+      .text("Output sftp username. Required when output is sftp.")
+
+    opt[String]("output-sftp-password")
+      .action((x, c) => c.copy(outputSftpPassword = Some(x)))
+      .text("Output sftp password. Required when output is sftp.")
 
     opt[String]("s3-input-region")
       .action((x, c) => c.copy(s3InputRegion = Some(Region.of(x))))
@@ -146,6 +167,22 @@ object ParseArgs {
         failure("When input is stdin, --keep-order cannot be provided")
       else if (c.output == "stdout" && c.numberOfParts != 1)
         failure("When output is stdout, --number-of-files can only be 1")
+      else if (c.input.startsWith("sftp://") && (
+          c.inputSftpPassword.isEmpty || c.inputSftpUsername.isEmpty))
+        failure("""|When input is sftp, --input-sftp-username and
+                   |--input-sftp-password should be provided""".stripMargin)
+      else if (!c.input.startsWith("sftp://") && (
+          c.inputSftpPassword.isDefined || c.inputSftpUsername.isDefined))
+        failure("""|Only when input is sftp, --input-sftp-username and
+                   |--input-sftp-password should be provided""".stripMargin)
+      else if (c.output.startsWith("sftp://") && (
+          c.outputSftpPassword.isEmpty || c.outputSftpUsername.isEmpty))
+        failure("""|When output is sftp, --output-sftp-username and
+                   |--output-sftp-password should be provided""".stripMargin)
+      else if (!c.output.startsWith("sftp://") && (
+          c.outputSftpPassword.isDefined || c.outputSftpUsername.isDefined))
+        failure("""|Only when output is sftp, --output-sftp-username and
+                   |--output-sftp-password should be provided""".stripMargin)
       else if (c.input.startsWith("s3://") && c.s3InputRegion.isEmpty)
         failure("When input is s3, --s3-input-region should be provided")
       else if (!c.input.startsWith("s3://") && c.s3InputRegion.isDefined)

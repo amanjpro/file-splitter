@@ -11,7 +11,7 @@ import java.util.EnumSet
 import scala.io.StdIn
 
 
-class Sftp(username: String, password: String) {
+class Sftp(username: String, password: String) extends FS {
   private val scheme = "sftp://"
   private val host = "[^/:]+"
   private val port = "\\d+"

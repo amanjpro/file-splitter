@@ -7,7 +7,7 @@ package object fs {
   val HDFSDefaultUser = "hdfs"
   val HDFSDefaultHome = "/"
 
-  val SupportedFS = Seq("hdfs://", "file://", "s3://", "stdout", "stdin")
+  val SupportedFS = Seq("hdfs://", "file://", "s3://", "sftp", "stdout", "stdin")
 
   def getInputFS(config: Config): FS = {
     if(config.input == "stdin") StdIO
@@ -19,13 +19,23 @@ package object fs {
         home <- config.inputHdfsHome
       } yield new HDFS(root, user, home)
       maybeFS.getOrElse(new HDFS)
-    }
-    else if(config.input.startsWith("s3://"))
+    } else if(config.input.startsWith("s3://"))
       config.s3InputRegion.map(new S3(_)) match {
         case Some(fs) => fs
         case _        => throw new MatchError("Please provide input S3 region")
       }
-    else
+    else if(config.input.startsWith("sftp://")) {
+      val conn = for {
+        username <- config.inputSftpUsername
+        password <- config.inputSftpPassword
+      } yield new Sftp(username, password)
+      conn match {
+        case Some(fs) => fs
+        case _        =>
+          throw new MatchError(
+            s"Please provide username and password for ${config.input}")
+      }
+    } else
       throw new MatchError(s"Unsupported file system ${config.input}")
   }
 
@@ -39,13 +49,23 @@ package object fs {
         home <- config.outputHdfsHome
       } yield new HDFS(root, user, home)
       maybeFS.getOrElse(new HDFS)
-    }
-    else if(config.output.startsWith("s3://"))
+    } else if(config.output.startsWith("s3://"))
       config.s3OutputRegion.map(new S3(_)) match {
         case Some(fs) => fs
         case _        => throw new MatchError("Please provide output S3 region")
       }
-    else
+    else if(config.output.startsWith("sftp://")) {
+      val conn = for {
+        username <- config.outputSftpUsername
+        password <- config.outputSftpPassword
+      } yield new Sftp(username, password)
+      conn match {
+        case Some(fs) => fs
+        case _        =>
+          throw new MatchError(
+            s"Please provide username and password for ${config.output}")
+      }
+    } else
       throw new MatchError(s"Unsupported file system ${config.output}")
   }
 }

@@ -39,15 +39,15 @@ splitter 0.3.0-SNAPSHOT
 Usage: splitter [options]
 
   -i <value> | --input <value>
-        The file to be splitted. At this point, S3, local FS
+        The file to be splitted. At this point, S3, local FS, Sftp
         and HDFS are supported. The job can also read from stdin
         by simply passing 'stdin' as the input.
-        Exmples: hdfs://..., s3://... and file://...
+        Exmples: hdfs://..., s3://..., sftp://... and file://...
   -o <value> | --output <value>
         The directory where the splitted parts should go.
-        At this point, S3, local FS and HDFS are supported.
+        At this point, S3, local FS, Sftp and HDFS are supported.
         The job can also write to stdout by simply passing
-        'stdout' here. Exmples: hdfs://..., s3://...
+        'stdout' here. Exmples: hdfs://..., s3://..., sftp://...
         and file://...
   -x <value> | --input-compression <value>
         Input file compression formatSupported compressions:
@@ -55,6 +55,14 @@ Usage: splitter [options]
   -z <value> | --output-compression <value>
         Output file compression format Supported compressions:
         none, gzip Default: none
+  --input-sftp-username <value>
+        Input sftp username. Required when input is sftp.
+  --input-sftp-password <value>
+        Input sftp password. Required when input is sftp.
+  --output-sftp-username <value>
+        Output sftp username. Required when output is sftp.
+  --output-sftp-password <value>
+        Output sftp password. Required when output is sftp.
   --s3-input-region <value>
         Input S3 Region. Required when dealing with S3 paths only.
   --s3-output-region <value>
