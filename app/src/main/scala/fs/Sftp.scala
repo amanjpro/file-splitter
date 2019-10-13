@@ -1,15 +1,18 @@
 package me.amanj.file.splitter.fs
 
-import java.io.{InputStream, OutputStream, File, IOException}
-import net.schmizz.sshj.SSHClient
+// SSH related imports
 import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.sftp.{SFTPClient, OpenMode}
 import net.schmizz.sshj.xfer.FileSystemFile
 import net.schmizz.sshj.transport.TransportException
-import net.schmizz.sshj.common.DisconnectReason
-import java.util.EnumSet
-import scala.io.StdIn
+import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts
+import net.schmizz.sshj.common.{DisconnectReason, KeyType, SecurityUtils}
+import java.security.PublicKey
 
+// IO and Misc
+import java.util.EnumSet
+import java.io.{InputStream, OutputStream, File, IOException}
+import scala.io.StdIn
 
 class Sftp(username: String, password: String) extends FS {
   private val scheme = "sftp://"
@@ -36,27 +39,10 @@ class Sftp(username: String, password: String) extends FS {
   def getStream[T](host: String, port: Int)(get: SSHClient => T): T = {
     var ssh = new SSHClient
     ssh.loadKnownHosts(new File(KnownHosts))
-    try {
-      ssh.connect(host, port)
-    } catch {
-      case e: TransportException =>
-        if (e.getDisconnectReason ==
-          DisconnectReason.HOST_KEY_NOT_VERIFIABLE) {
-          val msg = e.getMessage()
-          val answer =
-            StdIn.readLine(s"$msg\nConnect anyways? [yes/no].\n")
-          answer.toLowerCase match {
-            case "yes" =>
-              val split = msg.split("`")
-              val vc = split(3)
-              ssh = new SSHClient();
-              ssh.loadKnownHosts(new File(KnownHosts))
-              ssh.addHostKeyVerifier(vc)
-              ssh.connect(host, port)
-            case _     => System.exit(0)
-          }
-        } else throw e
-    }
+    val hostVerifier =
+      new Sftp.OpenSSHKnownHostsInteractive(new File(KnownHosts))
+    ssh.addHostKeyVerifier(hostVerifier)
+    ssh.connect(host, port)
     ssh.authPassword(username, password)
     get(ssh)
   }
@@ -104,6 +90,68 @@ class Sftp(username: String, password: String) extends FS {
       client.close
       ssh.disconnect
       size
+    }
+  }
+}
+
+object Sftp {
+  class OpenSSHKnownHostsInteractive(file: File)
+      extends OpenSSHKnownHosts(file) {
+    override protected def hostKeyUnverifiableAction(hostname: String,
+        key: PublicKey): Boolean = {
+      val tpe = KeyType.fromKey(key)
+      val msg =
+        s"""|The authenticity of host '$hostname' can't be established
+            |
+            |$tpe key fingerprint is ${SecurityUtils.getFingerprint(key)}
+            |
+            |
+            |Are you sure you want to continue connecting? [yes/no]\n"""
+              .stripMargin
+      val answer = StdIn.readLine(msg)
+      answer.toLowerCase match {
+        case "yes" =>
+          entries.add(new OpenSSHKnownHosts.HostEntry(null, hostname,
+            KeyType.fromKey(key), key))
+          try {
+            write();
+            println(
+              s"## Warning: Permanently added '$hostname' ($tpe) to the list of known hosts")
+            true
+          } catch {
+            case ex: IOException =>
+              println(ex);
+              println(
+                s"## Warning: Could not add '$hostname' ($tpe) to the list of known hosts.")
+            true
+          }
+        case _ =>
+          false
+      }
+    }
+
+    override protected def hostKeyChangedAction(hostname: String,
+        key: PublicKey): Boolean = {
+      val tpe = KeyType.fromKey(key)
+      val fp = SecurityUtils.getFingerprint(key)
+      val path = getFile().getAbsolutePath()
+      val msg =
+        s"""|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            |@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+            |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            |IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+            |Someone could be eavesdropping on you right now
+            |(man-in-the-middle attack)!
+            |
+            |It is also possible that the host key has just been changed.
+            |The fingerprint for the $tpe key sent by the remote host is
+            |$fp.
+            |
+            |Please contact your system administrator or
+            |add correct host key in $path to get rid of this message."""
+              .stripMargin
+      println(msg)
+      false
     }
   }
 }
