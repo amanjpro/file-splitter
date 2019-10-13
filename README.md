@@ -35,7 +35,7 @@ A very simple utility to split large files into smaller ones.
 ## Supported options
 
 ```sh
-bin/splitter --help
+$ bin/splitter --help
 splitter 0.3.0-SNAPSHOT
 Usage: splitter [options]
 
