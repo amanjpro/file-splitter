@@ -6,6 +6,7 @@ A very simple utility to split large files into smaller ones.
 
 ## Supported IO (file?) systems:
   - Local file system
+  - SFTP
   - HDFS
   - S3
   - StdIn/StdOut
