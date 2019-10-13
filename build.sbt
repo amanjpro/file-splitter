@@ -5,6 +5,9 @@ val LibraryDependencies = Seq(
   "software.amazon.awssdk" % "s3" % "2.9.13",
   "org.apache.hadoop" % "hadoop-client" % "3.2.1",
   "com.github.scopt" %% "scopt" % "3.7.1",
+  "com.hierynomus" % "sshj" % "0.27.0" excludeAll {
+     ExclusionRule(organization = "org.bouncycastle")
+  },
   "org.scalatest" %% "scalatest" % "3.0.8" % "test"
 )
 

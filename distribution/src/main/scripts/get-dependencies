@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+
+# shellcheck disable=SC2230
+FILE_SPLITTER_HOME="$(cd "$(dirname "$(which "$0")")"/.. >/dev/null; pwd -P)"
+CLASSPATH="$FILE_SPLITTER_HOME"/lib
+
+BOUNCY_URL="http://www.bouncycastle.org/download/"
+BOUNCY_JARS=("bcprov-jdk15on-164.jar"  "bcpkix-jdk15on-164.jar")
+
+for i in "${BOUNCY_JARS[@]}"; do
+  if [ ! -f  "$CLASSPATH/$i" ]; then
+    echo "Downloading $i from $BOUNCY_URL"
+    wget "$BOUNCY_URL/$i" -O "$CLASSPATH/$i"
+  fi
+done
+
