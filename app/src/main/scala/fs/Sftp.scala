@@ -21,7 +21,7 @@ class Sftp(username: String, password: String) extends FS {
   private val file = ".*"
   private val SftpRegex = s"$scheme($host)(:$port)?/($file)".r
   private val KnownHosts = System.getenv.getOrDefault("KNOWN_HOSTS",
-    s"${System.getProperty("user.home")}/.ssh/known_hosts")
+    Sftp.DefaultKnownHosts)
 
   def host(path: String): String = path match {
     case SftpRegex(host, _, _) => host
@@ -95,6 +95,9 @@ class Sftp(username: String, password: String) extends FS {
 }
 
 object Sftp {
+  val DefaultKnownHosts =
+    s"${System.getProperty("user.home")}/.ssh/known_hosts"
+
   class OpenSSHKnownHostsInteractive(file: File)
       extends OpenSSHKnownHosts(file) {
     override protected def hostKeyUnverifiableAction(hostname: String,

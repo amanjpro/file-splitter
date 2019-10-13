@@ -33,8 +33,8 @@ A very simple utility to split large files into smaller ones.
 
 ## Supported options
 
-```
-$ bin/splitter --help
+```sh
+bin/splitter --help
 splitter 0.3.0-SNAPSHOT
 Usage: splitter [options]
 
@@ -87,4 +87,9 @@ Usage: splitter [options]
         Number of output files, default is 1.
   --help
         prints this usage text
+
+By default the Sftp module, looks for the known_hosts in
+/Users/amanj/.ssh/known_hosts. You can change it by setting up
+KNOWN_HOSTS environment variable, something like:
+KNOWN_HOSTS=/new/path bin/splitter ...
 ```

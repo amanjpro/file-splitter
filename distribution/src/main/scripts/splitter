@@ -17,5 +17,4 @@ function join_by {
 APP_JARS="$(echo "${CLASSPATH}"/*.jar)"
 # shellcheck disable=SC2068
 CLASSPATH_JARS="$(join_by ':' ${APP_JARS[@]})"
-echo "$CLASSPATH_JARS"
 java -cp "$CLASSPATH_JARS" me.amanj.file.splitter.App "$@"

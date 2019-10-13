@@ -158,6 +158,13 @@ object ParseArgs {
 
     help("help").text("prints this usage text")
 
+    note(s"""|
+             |By default the Sftp module, looks for the known_hosts in
+             |${Sftp.DefaultKnownHosts}. You can change it by setting up
+             |KNOWN_HOSTS environment variable, something like:
+             |KNOWN_HOSTS=/new/path bin/splitter ..."""
+               .stripMargin)
+
     checkConfig( c =>
       if (c.output == "stdin")
         failure("Cannot write to stdin")
