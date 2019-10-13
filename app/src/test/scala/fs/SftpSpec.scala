@@ -8,15 +8,30 @@ class SftpSpec extends FlatSpec with Matchers {
   }
 
   "extractFilePath" should "extract the file path when port is present" in {
-    new Sftp("user", "pass").extractFilePath("sftp://host:1/ak/am") shouldBe "ak/am"
+    val path = "sftp://host:1/ak/am"
+    new Sftp("user", "pass").extractFilePath(path) shouldBe path
   }
 
   "extractFilePath" should "extract the file path when port is absent" in {
-    new Sftp("user", "pass").extractFilePath("sftp://host/ak/am") shouldBe "ak/am"
+    val path = "sftp://host/ak/am"
+    new Sftp("user", "pass").extractFilePath(path) shouldBe path
   }
 
   "extractFilePath" should "extract the file path when path is in home" in {
-    new Sftp("user", "pass").extractFilePath("sftp://host:2/ak") shouldBe "ak"
+    val path = "sftp://host:2/ak"
+    new Sftp("user", "pass").extractFilePath(path) shouldBe path
+  }
+
+  "remoteFile" should "extract the file path when port is present" in {
+    new Sftp("user", "pass").remoteFile("sftp://host:1/ak/am") shouldBe "ak/am"
+  }
+
+  "remoteFile" should "extract the file path when port is absent" in {
+    new Sftp("user", "pass").remoteFile("sftp://host/ak/am") shouldBe "ak/am"
+  }
+
+  "remoteFile" should "extract the file path when path is in home" in {
+    new Sftp("user", "pass").remoteFile("sftp://host:2/ak") shouldBe "ak"
   }
 
   "port" should "extract the port number" in {
