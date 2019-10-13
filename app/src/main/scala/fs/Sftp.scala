@@ -29,6 +29,10 @@ class Sftp(username: String, password: String) extends FS {
     case SftpRegex(_, port, _) => port.tail.toInt
   }
 
+  def remoteFile(path: String): String = path match {
+    case SftpRegex(_, _, file) => file
+  }
+
   def getStream[T](host: String, port: Int)(get: SSHClient => T): T = {
     var ssh = new SSHClient
     ssh.loadKnownHosts(new File(KnownHosts))
@@ -46,6 +50,7 @@ class Sftp(username: String, password: String) extends FS {
               val split = msg.split("`")
               val vc = split(3)
               ssh = new SSHClient();
+              ssh.loadKnownHosts(new File(KnownHosts))
               ssh.addHostKeyVerifier(vc)
               ssh.connect(host, port)
             case _     => System.exit(0)
@@ -59,7 +64,7 @@ class Sftp(username: String, password: String) extends FS {
   def source(path: String): InputStream =
     getStream(host(path), port(path)) { case ssh =>
       val client = ssh.newSFTPClient
-      val handle = client.open(extractFilePath(path), EnumSet.of(OpenMode.READ))
+      val handle = client.open(remoteFile(path), EnumSet.of(OpenMode.READ))
       new handle.ReadAheadRemoteFileInputStream(16) {
         override def close(): Unit = {
           super.close();
@@ -74,10 +79,10 @@ class Sftp(username: String, password: String) extends FS {
     getStream(host(path), port(path)) { case ssh =>
       val client = ssh.newSFTPClient
       val handle = try {
-        client.open(extractFilePath(path), EnumSet.of(OpenMode.WRITE))
+        client.open(remoteFile(path), EnumSet.of(OpenMode.WRITE))
       } catch {
         case _: IOException =>
-          client.open(extractFilePath(path), EnumSet.of(OpenMode.CREAT))
+          client.open(remoteFile(path), EnumSet.of(OpenMode.CREAT))
       }
       new handle.RemoteFileOutputStream() {
           override def close(): Unit = {
@@ -89,14 +94,12 @@ class Sftp(username: String, password: String) extends FS {
         }
     }
   def separator: String = "/"
-  def extractFilePath(path: String): String = path match {
-    case SftpRegex(_, _, file) => file
-  }
+  def extractFilePath(path: String): String = path
 
   def size(path: String): Long = getStream(host(path), port(path)) {
     case ssh => {
       val client = ssh.newSFTPClient
-      val handle = client.open(extractFilePath(path), EnumSet.of(OpenMode.READ))
+      val handle = client.open(remoteFile(path), EnumSet.of(OpenMode.READ))
       val size = handle.length
       client.close
       ssh.disconnect

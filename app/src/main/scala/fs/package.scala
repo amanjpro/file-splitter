@@ -55,11 +55,11 @@ package object fs {
         case _        => throw new MatchError("Please provide output S3 region")
       }
     else if(config.output.startsWith("sftp://")) {
-      val conn = for {
+      val maybeSftp = for {
         username <- config.outputSftpUsername
         password <- config.outputSftpPassword
       } yield new Sftp(username, password)
-      conn match {
+      maybeSftp match {
         case Some(fs) => fs
         case _        =>
           throw new MatchError(
