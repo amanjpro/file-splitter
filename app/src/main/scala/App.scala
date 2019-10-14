@@ -46,7 +46,7 @@ object App {
         if(config.keepOrder)
           src.ordered.sinks(dest.toArray)
         else
-          src.sinks(dest.toArray)
+          src.unordered.sinks(dest.toArray)
       case _            => // do nothing
     }
   }
