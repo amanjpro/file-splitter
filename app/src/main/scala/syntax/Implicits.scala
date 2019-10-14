@@ -20,9 +20,6 @@ object Implicits {
     def sinks(printers: Array[PrintWriter]): Unit =
       new Splitter.Unordered(self).split(printers)
 
-    def sinks(printers: Array[OutputStream]): Unit =
-      new Splitter.Unordered(self).split(printers.map(_.printer))
-
     def ordered(implicit fs: FS, path: String): Splitter.Ordered =
       new Splitter.Ordered(self, fs.size(path))
   }
@@ -30,34 +27,6 @@ object Implicits {
   implicit class OrderedSplitterExt(self: Splitter.Ordered) {
     def sinks(printers: Array[PrintWriter]): Unit =
       self.split(printers)
-
-    def sinks(printers: Array[OutputStream])(): Unit =
-      self.split(printers.map(_.printer))
-  }
-
-  implicit class InputStreamExt(self: InputStream) {
-    def gzip(charset: Charset): Reader =
-      Compression.fromGzip(self, charset)
-
-    def gzip: Reader =
-      gzip(StandardCharsets.UTF_8)
-
-    def buffered: BufferedReader =
-      new BufferedReader(new InputStreamReader(self))
-
-    def sinks(printers: Array[PrintWriter]): Unit =
-      buffered.sinks(printers)
-  }
-
-  implicit class OutputStreamExt(self: OutputStream) {
-    def gzip(charset: Charset): Writer =
-      Compression.toGzip(self, charset)
-
-    def gzip: Writer =
-      gzip(StandardCharsets.UTF_8)
-
-    def printer: PrintWriter =
-      new PrintWriter(new OutputStreamWriter(self))
   }
 
   implicit class WriterExt(self: Writer) {
