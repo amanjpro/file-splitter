@@ -33,7 +33,9 @@ class SplitterSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
   }
 
   "Ordered.split" should "keep the input order when splitting" in {
-    new Splitter.Ordered(LocalFS.source(in).buffered, 4)
+    val input = LocalFS.compression(None)
+      .reader(LocalFS.source(in)).buffered
+    new OrderedSplitter(input, 4)
       .sinks(Array(new PrintWriter(out1), new PrintWriter(out2)))
 
     val lines1 = scala.io.Source.fromFile(out1).getLines.toSeq
@@ -44,7 +46,9 @@ class SplitterSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
   }
 
   "Unordered.split" should "use one printer per line" in {
-    LocalFS.source(in).buffered
+    val input = LocalFS.compression(None)
+      .reader(LocalFS.source(in)).buffered
+    new UnorderedSplitter(input)
       .sinks(Array(new PrintWriter(out1), new PrintWriter(out2)))
 
     val lines1 = scala.io.Source.fromFile(out1).getLines.toSeq

@@ -27,26 +27,33 @@ object App {
   def main(args: Array[String]): Unit = {
     ParseArgs.parser.parse(args, Config()) match {
       case Some(config) =>
-        implicit val input = config.input
-        implicit val inputFS = getInputFS(config)
-
+        // input stream
+        val input = config.input
+        val inputFS = getInputFS(config)
+        val inFile = inputFS.extractFilePath(input)
         val inCompression =
           Compression.toCompression(config.inputCompression)
-        val outCompression =
-          Compression.toCompression(config.outputCompression)
+        val source = getSource(inCompression, input, inputFS)
 
+        // output streams
+        val output = config.output
         val outputFS = getOutputFS(config)
         val partNames =
           getPartNames(config.output, outputFS.separator,
             config.numberOfParts)
-
-        val src = getSource(inCompression, input, inputFS)
-        val dest = getSinks(outCompression, partNames, outputFS)
+        val dest = getSinks(
+          Compression.toCompression(config.outputCompression),
+          partNames, outputFS)
 
         if(config.keepOrder)
-          src.ordered.sinks(dest.toArray)
+          source
+            .ordered(
+              inCompression.compressionFactor * inputFS.size(inFile))
+            .sinks(dest.toArray)
         else
-          src.unordered.sinks(dest.toArray)
+          source
+            .unordered
+            .sinks(dest.toArray)
       case _            => // do nothing
     }
   }
