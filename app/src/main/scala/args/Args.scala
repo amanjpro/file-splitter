@@ -102,7 +102,7 @@ object ParseArgs {
 
     opt[String]("input-sftp-password")
       .action((x, c) => c.copy(inputSftpPassword = Some(x)))
-      .text("Input sftp password. Required when input is sftp.")
+      .text("Input sftp password, optional.")
 
     opt[String]("output-sftp-username")
       .action((x, c) => c.copy(outputSftpUsername = Some(x)))
@@ -110,7 +110,7 @@ object ParseArgs {
 
     opt[String]("output-sftp-password")
       .action((x, c) => c.copy(outputSftpPassword = Some(x)))
-      .text("Output sftp password. Required when output is sftp.")
+      .text("Output sftp password, optional.")
 
     opt[String]("s3-input-region")
       .action((x, c) => c.copy(s3InputRegion = Some(Region.of(x))))
@@ -162,7 +162,15 @@ object ParseArgs {
              |By default the Sftp module, looks for the known_hosts in
              |${Sftp.DefaultKnownHosts}. You can change it by setting up
              |KNOWN_HOSTS environment variable, something like:
-             |KNOWN_HOSTS=/new/path bin/splitter ..."""
+             |KNOWN_HOSTS=/new/path bin/splitter ...
+             |
+             |You can also specify the default location(s) for public key
+             |when dealing with Sftp. By default the splitter looks for
+             |the defined public/private keys in ${Sftp.DefaultPublicKeyLocation}.
+             |But you can override it by setting PUBLIC_KEY_LOCATIONS
+             |environment variable, like:
+             |PUBLIC_KEY_LOCATIONS=/new/path bin/splitter ...
+             """
                .stripMargin)
 
     checkConfig( c =>
@@ -174,18 +182,18 @@ object ParseArgs {
         failure("When input is stdin, --keep-order cannot be provided")
       else if (c.output == "stdout" && c.numberOfParts != 1)
         failure("When output is stdout, --number-of-files can only be 1")
-      else if (c.input.startsWith("sftp://") && (
-          c.inputSftpPassword.isEmpty || c.inputSftpUsername.isEmpty))
-        failure("""|When input is sftp, --input-sftp-username and
-                   |--input-sftp-password should be provided""".stripMargin)
+      else if (c.input.startsWith("sftp://") &&
+          c.inputSftpUsername.isEmpty)
+        failure("""|When input is sftp, --input-sftp-username should be
+                   |provided""".stripMargin)
       else if (!c.input.startsWith("sftp://") && (
           c.inputSftpPassword.isDefined || c.inputSftpUsername.isDefined))
         failure("""|Only when input is sftp, --input-sftp-username and
                    |--input-sftp-password should be provided""".stripMargin)
-      else if (c.output.startsWith("sftp://") && (
-          c.outputSftpPassword.isEmpty || c.outputSftpUsername.isEmpty))
-        failure("""|When output is sftp, --output-sftp-username and
-                   |--output-sftp-password should be provided""".stripMargin)
+      else if (c.output.startsWith("sftp://") &&
+          c.outputSftpUsername.isEmpty)
+        failure("""|When output is sftp, --output-sftp-username should be
+                   |provided""".stripMargin)
       else if (!c.output.startsWith("sftp://") && (
           c.outputSftpPassword.isDefined || c.outputSftpUsername.isDefined))
         failure("""|Only when output is sftp, --output-sftp-username and

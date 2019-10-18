@@ -14,7 +14,7 @@ import java.util.EnumSet
 import java.io.{InputStream, OutputStream, File, IOException}
 import scala.io.StdIn
 
-class Sftp(username: String, password: String) extends FS {
+class Sftp(auth: Sftp.Auth) extends FS {
   private val scheme = "sftp://"
   private val host = "[^/:]+"
   private val port = "\\d+"
@@ -22,6 +22,9 @@ class Sftp(username: String, password: String) extends FS {
   private val SftpRegex = s"$scheme($host)(:$port)?/($file)".r
   private val KnownHosts = System.getenv.getOrDefault("KNOWN_HOSTS",
     Sftp.DefaultKnownHosts)
+  private val PublicKeyLocations = System.getenv
+    .getOrDefault("PUBLIC_KEY_LOCATIONS", Sftp.DefaultPublicKeyLocation)
+    .split(',')
 
   def host(path: String): String = path match {
     case SftpRegex(host, _, _) => host
@@ -43,7 +46,12 @@ class Sftp(username: String, password: String) extends FS {
       new Sftp.OpenSSHKnownHostsInteractive(new File(KnownHosts))
     ssh.addHostKeyVerifier(hostVerifier)
     ssh.connect(host, port)
-    ssh.authPassword(username, password)
+    auth match {
+      case Sftp.KeyAuth(username) =>
+        ssh.authPublickey(username, PublicKeyLocations: _*)
+      case Sftp.Login(username, password) =>
+        ssh.authPassword(username, password)
+    }
     get(ssh)
   }
 
@@ -95,8 +103,14 @@ class Sftp(username: String, password: String) extends FS {
 }
 
 object Sftp {
+  val DefaultPublicKeyLocation =
+    s"${System.getProperty("user.home")}/.ssh/id_rsa"
   val DefaultKnownHosts =
     s"${System.getProperty("user.home")}/.ssh/known_hosts"
+
+  sealed trait Auth
+  case class Login(username: String, password: String) extends Auth
+  case class KeyAuth(username: String) extends Auth
 
   class OpenSSHKnownHostsInteractive(file: File)
       extends OpenSSHKnownHosts(file) {

@@ -25,15 +25,17 @@ package object fs {
         case _        => throw new MatchError("Please provide input S3 region")
       }
     else if(config.input.startsWith("sftp://")) {
-      val conn = for {
-        username <- config.inputSftpUsername
-        password <- config.inputSftpPassword
-      } yield new Sftp(username, password)
-      conn match {
+      val maybeSftp = config.inputSftpUsername.map { username =>
+        config.inputSftpPassword match {
+          case None => new Sftp(Sftp.KeyAuth(username))
+          case Some(password) => new Sftp(Sftp.Login(username, password))
+        }
+      }
+      maybeSftp match {
         case Some(fs) => fs
         case _        =>
           throw new MatchError(
-            s"Please provide username and password for ${config.input}")
+            s"Please provide username for ${config.input}")
       }
     } else
       throw new MatchError(s"Unsupported file system ${config.input}")
@@ -55,15 +57,17 @@ package object fs {
         case _        => throw new MatchError("Please provide output S3 region")
       }
     else if(config.output.startsWith("sftp://")) {
-      val maybeSftp = for {
-        username <- config.outputSftpUsername
-        password <- config.outputSftpPassword
-      } yield new Sftp(username, password)
+      val maybeSftp = config.outputSftpUsername.map { username =>
+        config.outputSftpPassword match {
+          case None => new Sftp(Sftp.KeyAuth(username))
+          case Some(password) => new Sftp(Sftp.Login(username, password))
+        }
+      }
       maybeSftp match {
         case Some(fs) => fs
         case _        =>
           throw new MatchError(
-            s"Please provide username and password for ${config.output}")
+            s"Please provide username for ${config.output}")
       }
     } else
       throw new MatchError(s"Unsupported file system ${config.output}")
