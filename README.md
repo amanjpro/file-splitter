@@ -59,11 +59,11 @@ Usage: splitter [options]
   --input-sftp-username <value>
         Input sftp username. Required when input is sftp.
   --input-sftp-password <value>
-        Input sftp password. Required when input is sftp.
+        Input sftp password, optional.
   --output-sftp-username <value>
         Output sftp username. Required when output is sftp.
   --output-sftp-password <value>
-        Output sftp password. Required when output is sftp.
+        Output sftp password, optional.
   --s3-input-region <value>
         Input S3 Region. Required when dealing with S3 paths only.
   --s3-output-region <value>
@@ -93,4 +93,11 @@ By default the Sftp module, looks for the known_hosts in
 /Users/amanj/.ssh/known_hosts. You can change it by setting up
 KNOWN_HOSTS environment variable, something like:
 KNOWN_HOSTS=/new/path bin/splitter ...
+
+You can also specify the default location(s) for public key
+when dealing with Sftp. By default the splitter looks for
+the defined public/private keys in /Users/amanj/.ssh/id_rsa.
+But you can override it by setting PUBLIC_KEY_LOCATIONS
+environment variable, like:
+PUBLIC_KEY_LOCATIONS=/new/path bin/splitter ...
 ```
