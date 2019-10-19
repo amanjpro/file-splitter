@@ -46,15 +46,27 @@ object App {
             config.numberOfParts, outCompression.extension)
         val dest = getSinks(outCompression, partNames, outputFS)
 
-        if(config.keepOrder)
-          source
-            .ordered(
-              inCompression.compressionFactor * inputFS.size(inFile))
-            .sinks(dest.toArray)
-        else
-          source
-            .unordered
-            .sinks(dest.toArray)
+        if(inputFS.exists(inFile) &&
+          partNames.forall(! outputFS.exists(_))) {
+          if(config.keepOrder)
+            source
+              .ordered(
+                inCompression.compressionFactor * inputFS.size(inFile))
+              .sinks(dest.toArray)
+          else
+            source
+              .unordered
+              .sinks(dest.toArray)
+        } else if(! inputFS.exists(inFile)) {
+          println(s"$inFile does not exist, quitting...")
+          System.exit(1)
+        } else {
+          partNames.filter(outputFS.exists(_)).foreach { part =>
+            println(s"$part exists, cannot override...")
+          }
+          println("quitting")
+          System.exit(1)
+        }
       case _            => // do nothing
     }
   }
