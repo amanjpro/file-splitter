@@ -16,6 +16,9 @@ object LocalFS extends FS {
     path.replaceFirst("^file://", "")
 
   def size(path: String): Long = new File(path).length
+
+  def exists(path: String): Boolean =
+    new File(path).exists
 }
 
 

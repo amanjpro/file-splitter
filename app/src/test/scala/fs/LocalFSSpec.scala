@@ -18,5 +18,13 @@ class LocalFSSpec extends FlatSpec with Matchers {
   "extractFilePath" should "not remove non-leading file:// from path" in {
     LocalFS.extractFilePath("yay://file://file_name") shouldBe "yay://file://file_name"
   }
+
+  "exists" should "return true if file exists" in {
+    LocalFS.exists(System.getProperty("user.home")) shouldBe true
+  }
+
+  "exists" should "return false if file exists" in {
+    LocalFS.exists("/malmo") shouldBe false
+  }
 }
 

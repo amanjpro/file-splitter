@@ -8,5 +8,6 @@ trait FS {
   def separator: String
   def extractFilePath(path: String): String
   def size(path: String): Long
+  def exists(path: String): Boolean
 }
 

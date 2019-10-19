@@ -6,7 +6,7 @@ import java.nio.file.Files
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.{GetObjectRequest,
-  PutObjectResponse, PutObjectRequest, ListObjectsRequest}
+  PutObjectResponse, PutObjectRequest, ListObjectsV2Request}
 import software.amazon.awssdk.core.sync.ResponseTransformer
 import scala.collection.JavaConverters._
 
@@ -44,10 +44,22 @@ class S3(region: Region) extends FS {
 
   def extractFilePath(path: String): String = path
 
-  def size(path: String): Long = s3Client.listObjects(
-      ListObjectsRequest.builder
+  def exists(path: String): Boolean = {
+    val objects = s3Client.listObjectsV2(
+        ListObjectsV2Request.builder
+          .bucket(bucket(path))
+          .prefix(key(path))
+          .build
+      ).contents.asScala
+        .filter(_.key == key(path))
+      objects.length == 1
+  }
+
+
+  def size(path: String): Long = s3Client.listObjectsV2(
+      ListObjectsV2Request.builder
         .bucket(bucket(path))
-        .marker(key(path))
+        .prefix(key(path))
         .build
     ).contents.asScala.foldLeft(0L)(_ + _.size)
 }

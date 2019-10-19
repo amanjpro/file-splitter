@@ -87,8 +87,26 @@ class Sftp(auth: Sftp.Auth) extends FS {
           }
         }
     }
+
   def separator: String = "/"
   def extractFilePath(path: String): String = path
+
+  def exists(path: String): Boolean = getStream(host(path), port(path)) {
+    case ssh => {
+      val client = ssh.newSFTPClient
+      try {
+        client.open(remoteFile(path), EnumSet.of(OpenMode.READ))
+        client.close
+        ssh.disconnect
+        true
+      } catch {
+        case _: IOException =>
+          client.close
+          ssh.disconnect
+          false
+      }
+    }
+  }
 
   def size(path: String): Long = getStream(host(path), port(path)) {
     case ssh => {
