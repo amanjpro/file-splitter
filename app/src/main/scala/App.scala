@@ -8,8 +8,9 @@ import software.amazon.awssdk.regions.Region
 import java.io.{PrintWriter, BufferedReader}
 
 object App {
-  def getPartNames(base: String, sep: String, parts: Int): Seq[String] =
-    (0 until parts).map(i => f"$base${sep}part-$i%05d")
+  def getPartNames(base: String, sep: String,
+      parts: Int, ext: String): Seq[String] =
+    (0 until parts).map(i => f"$base${sep}part-$i%05d$ext")
 
   def getSource(compression: Compression,
       input: String, fs: FS): BufferedReader = {
@@ -21,7 +22,7 @@ object App {
       fileNames: Seq[String], fs: FS): Seq[PrintWriter] =
     fileNames.map { file =>
       val path = fs.extractFilePath(file)
-      compression.writer(fs.sink(s"$path${compression.extension}")).printer
+      compression.writer(fs.sink(s"$path")).printer
     }
 
   def main(args: Array[String]): Unit = {
@@ -38,22 +39,34 @@ object App {
         // output streams
         val output = config.output
         val outputFS = getOutputFS(config)
+        val outCompression =
+          Compression.toCompression(config.outputCompression)
         val partNames =
           getPartNames(config.output, outputFS.separator,
-            config.numberOfParts)
-        val dest = getSinks(
-          Compression.toCompression(config.outputCompression),
-          partNames, outputFS)
+            config.numberOfParts, outCompression.extension)
+        val dest = getSinks(outCompression, partNames, outputFS)
 
-        if(config.keepOrder)
-          source
-            .ordered(
-              inCompression.compressionFactor * inputFS.size(inFile))
-            .sinks(dest.toArray)
-        else
-          source
-            .unordered
-            .sinks(dest.toArray)
+        if(inputFS.exists(inFile) &&
+          partNames.forall(! outputFS.exists(_))) {
+          if(config.keepOrder)
+            source
+              .ordered(
+                inCompression.compressionFactor * inputFS.size(inFile))
+              .sinks(dest.toArray)
+          else
+            source
+              .unordered
+              .sinks(dest.toArray)
+        } else if(! inputFS.exists(inFile)) {
+          println(s"$inFile does not exist, quitting...")
+          System.exit(1)
+        } else {
+          partNames.filter(outputFS.exists(_)).foreach { part =>
+            println(s"$part exists, cannot override...")
+          }
+          println("quitting")
+          System.exit(1)
+        }
       case _            => // do nothing
     }
   }

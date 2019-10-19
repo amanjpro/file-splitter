@@ -32,6 +32,9 @@ class HDFS(rootURI: String = HDFSDefaultRootURI,
   def sink(path: String): OutputStream =
     fileSystem.create(new Path(path))
 
+  def exists(path: String): Boolean =
+    fileSystem.exists(new Path(path))
+
   def separator: String = Path.SEPARATOR
   def size(path: String) =
     fileSystem.getFileStatus(new Path(path)).getLen
