@@ -4,8 +4,11 @@ import org.scalatest._
 
 class AppSpec extends FlatSpec with Matchers {
   "getPartNames" should "generate correct file parts" in {
-    App.getPartNames("/tmp", "/", 3) should contain theSameElementsAs Seq(
-      "/tmp/part-00000", "/tmp/part-00001", "/tmp/part-00002")
+    val expected = Seq(
+      "/tmp/part-00000.gz", "/tmp/part-00001.gz", "/tmp/part-00002.gz")
+    val actual = App.getPartNames("/tmp", "/", 3, ".gz")
+
+    actual should contain theSameElementsAs expected
   }
 }
 
