@@ -3,14 +3,5 @@ set -o errexit -o nounset -o pipefail
 
 echo "Setting up the environment"
 
-# docker run --detach --rm --name s3mock \
-#   -p 8001:8001 \
-#   findify/s3mock:latest
-
 docker run --detach --rm --name s3mock \
   -p 9090:9090 -p 9191:9191 -t adobe/s3mock
-
-
-# docker run --rm --name s3mock \
-#   -p 127.0.0.1:9090:9090 -p 127.0.0.1:9191:9191 \
-#   -t adobe/s3mock:latest
