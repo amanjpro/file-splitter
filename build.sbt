@@ -1,6 +1,6 @@
 val Organization = "me.amanj"
 val ProjectName = "file-splitter"
-val ProjectScalaVersion = "2.12.8"
+val ProjectScalaVersion = "2.13.0"
 val LibraryDependencies = Seq(
   "software.amazon.awssdk" % "s3" % "2.9.14",
   "org.apache.hadoop" % "hadoop-client" % "3.2.1",
