@@ -26,7 +26,19 @@ class S3SpecIt extends FlatSpec with
 
   val credential = AwsBasicCredentials.create("key", "secret")
 
-  var s3Client: S3Client = _
+  var s3Client = S3Client
+    .builder
+    .region(Region.of("us-east-1"))
+    .endpointOverride(URI.create("http://localhost:8001"))
+    .credentialsProvider(
+      StaticCredentialsProvider.create(credential))
+    .httpClient(UrlConnectionHttpClient.builder()
+      .buildWithDefaults(AttributeMap.builder()
+        .put(TRUST_ALL_CERTIFICATES, TRUE)
+      .build()))
+    .build
+
+
 
   var in: Path = _
   var out: Path = _
@@ -38,24 +50,10 @@ class S3SpecIt extends FlatSpec with
     new File(in.toString).delete
     new File(out.toString).delete
 
-    s3Client.close
     super.afterEach
   }
 
   override def beforeEach(): Unit = {
-    s3Client = S3Client
-      .builder
-      .region(Region.of("us-east-1"))
-      .endpointOverride(URI.create("http://localhost:8001"))
-      .credentialsProvider(
-        StaticCredentialsProvider.create(credential))
-      .httpClient(UrlConnectionHttpClient.builder()
-        .buildWithDefaults(AttributeMap.builder()
-          .put(TRUST_ALL_CERTIFICATES, TRUE)
-        .build()))
-      .build
-
-
     in = Files.createTempFile("test", "input")
     out = Files.createTempFile("test", "out")
 
