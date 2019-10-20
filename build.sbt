@@ -1,13 +1,15 @@
 val Organization = "me.amanj"
 val ProjectName = "file-splitter"
-val ProjectScalaVersion = "2.13.0"
+val ProjectScalaVersion = "2.12.8"
 val LibraryDependencies = Seq(
-  "software.amazon.awssdk" % "s3" % "2.9.13",
+  "software.amazon.awssdk" % "s3" % "2.9.14",
+  "software.amazon.awssdk" % "url-connection-client" % "2.9.14" % "test",
   "org.apache.hadoop" % "hadoop-client" % "3.2.1",
   "com.github.scopt" %% "scopt" % "3.7.1",
   "com.hierynomus" % "sshj" % "0.27.0" excludeAll {
      ExclusionRule(organization = "org.bouncycastle")
   },
+  "io.findify" %% "s3mock" % "0.2.5" % "test",
   "org.scalatest" %% "scalatest" % "3.0.8" % "test"
 )
 
