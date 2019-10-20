@@ -10,8 +10,7 @@ import software.amazon.awssdk.services.s3.model.{GetObjectRequest,
 import software.amazon.awssdk.core.sync.ResponseTransformer
 import scala.collection.JavaConverters._
 
-class S3(region: Region) extends FS {
-  val s3Client = S3Client.builder().region(region).build();
+class S3(s3Client: S3Client) extends FS {
 
   private val scheme = "s3://"
   private val bucket = "[^/]+"
@@ -64,6 +63,9 @@ class S3(region: Region) extends FS {
     ).contents.asScala.foldLeft(0L)(_ + _.size)
 }
 object S3 {
+  def apply(region: Region): S3 =
+    new S3(S3Client.builder().region(region).build())
+
   class S3OutputStream(s3Client: S3Client,
       bucket: String, key: String) extends OutputStream {
 

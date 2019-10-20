@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+
+echo "Setting up the environment"
+
+docker run --detach --rm --name s3mock \
+  -p 9090:9090 -p 9191:9191 -t adobe/s3mock

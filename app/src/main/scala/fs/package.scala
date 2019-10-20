@@ -20,7 +20,7 @@ package object fs {
       } yield new HDFS(root, user, home)
       maybeFS.getOrElse(new HDFS)
     } else if(config.input.startsWith("s3://"))
-      config.s3InputRegion.map(new S3(_)) match {
+      config.s3InputRegion.map(S3(_)) match {
         case Some(fs) => fs
         case _        => throw new MatchError("Please provide input S3 region")
       }
@@ -52,7 +52,7 @@ package object fs {
       } yield new HDFS(root, user, home)
       maybeFS.getOrElse(new HDFS)
     } else if(config.output.startsWith("s3://"))
-      config.s3OutputRegion.map(new S3(_)) match {
+      config.s3OutputRegion.map(S3(_)) match {
         case Some(fs) => fs
         case _        => throw new MatchError("Please provide output S3 region")
       }
