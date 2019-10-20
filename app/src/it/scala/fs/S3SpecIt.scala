@@ -29,7 +29,7 @@ class S3SpecIt extends FlatSpec with
   var s3Client = S3Client
     .builder
     .region(Region.of("us-east-1"))
-    .endpointOverride(URI.create("http://localhost:8001"))
+    .endpointOverride(URI.create("http://localhost:9090"))
     .credentialsProvider(
       StaticCredentialsProvider.create(credential))
     .httpClient(UrlConnectionHttpClient.builder()
