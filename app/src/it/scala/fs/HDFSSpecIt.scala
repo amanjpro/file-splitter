@@ -45,17 +45,17 @@ class HDFSSpecIt extends FlatSpec with
 
   "size" should "return size of the object" in {
     hdfs.fileSystem.copyFromLocalFile(new HPath(in.toString),
-      new HPath("/test.txt"))
-    hdfs.size("/test.txt") shouldBe 1
+      new HPath("/user/root/test.txt"))
+    hdfs.size("/user/root/test.txt") shouldBe 1
   }
 
   "source" should "should get input stream of path" in {
     hdfs.fileSystem.copyFromLocalFile(new HPath(in.toString),
-      new HPath("/test.txt"))
+      new HPath("/user/root/test.txt"))
 
     val lines = new BufferedReader(
       new InputStreamReader(
-        hdfs.source("/test.txt")
+        hdfs.source("/user/root/test.txt")
       )
     ).lines.iterator.asScala.toList
     lines shouldBe List("1")
@@ -63,13 +63,13 @@ class HDFSSpecIt extends FlatSpec with
 
   "sink" should "should get output stream of path" in {
     val printer = new PrintWriter(
-      hdfs.sink("/test"))
+      hdfs.sink("/user/root/test"))
     printer.print("2")
     printer.close
 
     val lines = new BufferedReader(
       new InputStreamReader(
-        hdfs.source("/test.txt")
+        hdfs.source("/user/root/test.txt")
       )
     ).lines.iterator.asScala.toList
     lines shouldBe List("2")
