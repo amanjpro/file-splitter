@@ -8,19 +8,19 @@ import org.apache.hadoop.fs.{FileSystem, Path}
 class HDFS(rootURI: String = HDFSDefaultRootURI,
   user: String = HDFSDefaultUser,
   home: String = HDFSDefaultHome) extends FS {
+  val hadoopConf = new Configuration
 
   private val fileSystem: FileSystem = {
-    val conf = new Configuration
-    conf.set("fs.defaultFS", rootURI)
-    conf.set("fs.hdfs.impl",
+    hadoopConf.set("fs.defaultFS", rootURI)
+    hadoopConf.set("fs.hdfs.impl",
       classOf[org.apache.hadoop.hdfs.DistributedFileSystem].getName())
-    conf.set("fs.file.impl",
+    hadoopConf.set("fs.file.impl",
       classOf[org.apache.hadoop.fs.LocalFileSystem].getName())
     // Set HADOOP user
     System.setProperty("HADOOP_USER_NAME", user)
     System.setProperty("hadoop.home.dir", home)
     //Get the filesystem - HDFS
-    FileSystem.get(URI.create(rootURI), conf)
+    FileSystem.get(URI.create(rootURI), hadoopConf)
   }
 
   def extractFilePath(path: String): String =
