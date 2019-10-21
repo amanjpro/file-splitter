@@ -63,13 +63,13 @@ class HDFSSpecIt extends FlatSpec with
 
   "sink" should "should get output stream of path" in {
     val printer = new PrintWriter(
-      hdfs.sink("/user/root/test"))
+      hdfs.sink("/user/root/test2"))
     printer.print("2")
     printer.close
 
     val lines = new BufferedReader(
       new InputStreamReader(
-        hdfs.source("/user/root/test.txt")
+        hdfs.source("/user/root/test2")
       )
     ).lines.iterator.asScala.toList
     lines shouldBe List("2")
