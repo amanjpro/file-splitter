@@ -54,8 +54,8 @@ class HDFSSpecIt extends FlatSpec with
 
   "source" should "should get input stream of path" in {
     val fs = FileSystem.get(hdfs.hadoopConf)
-    fs.copyFromLocalFile(new HPath("/test.txt"),
-      new HPath(in.toString))
+    fs.copyFromLocalFile(new HPath(in.toString),
+      new HPath("/test.txt"))
 
     val lines = new BufferedReader(
       new InputStreamReader(
@@ -73,7 +73,7 @@ class HDFSSpecIt extends FlatSpec with
 
     val lines = new BufferedReader(
       new InputStreamReader(
-        hdfs.source("/test")
+        hdfs.source("/test.txt")
       )
     ).lines.iterator.asScala.toList
     lines shouldBe List("2")
