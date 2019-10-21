@@ -19,14 +19,14 @@ import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.utils.AttributeMap
 
 // Java interop
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class S3SpecIt extends FlatSpec with
   Matchers with BeforeAndAfterEach {
 
   val credential = AwsBasicCredentials.create("key", "secret")
 
-  var s3Client = S3Client
+  val s3Client = S3Client
     .builder
     .region(Region.of("us-east-1"))
     .endpointOverride(URI.create("http://localhost:9090"))

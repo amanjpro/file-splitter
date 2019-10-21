@@ -20,6 +20,10 @@ publishMavenStyle in ThisBuild := true
 version in ThisBuild := "0.5.0-SNAPSHOT"
 coverageEnabled in ThisBuild := true
 
+scalacOptions in ThisBuild ++= Seq(
+  "-encoding", "UTF-8", "-unchecked", "-deprecation",
+  "-feature", "-Xlint", "-Xfatal-warnings")
+
 def project(baseDir: String, plugin: Option[AutoPlugin] = None): Project = {
   val projectId = s"$ProjectName-$baseDir"
 

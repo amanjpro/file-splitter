@@ -4,7 +4,6 @@ import me.amanj.file.splitter.fs._
 import me.amanj.file.splitter.compression.Compression
 import me.amanj.file.splitter.syntax.Implicits._
 import me.amanj.file.splitter.args.{ParseArgs, Config}
-import software.amazon.awssdk.regions.Region
 import java.io.{PrintWriter, BufferedReader}
 
 object App {
@@ -42,7 +41,7 @@ object App {
         val outCompression =
           Compression.toCompression(config.outputCompression)
         val partNames =
-          getPartNames(config.output, outputFS.separator,
+          getPartNames(output, outputFS.separator,
             config.numberOfParts, outCompression.extension)
         val dest = getSinks(outCompression, partNames, outputFS)
 

@@ -1,14 +1,13 @@
 package me.amanj.file.splitter.fs
 
-import java.io.{InputStream, PrintWriter, OutputStream, FileOutputStream}
+import java.io.{InputStream, OutputStream, FileOutputStream}
 import java.nio.file.Files
 
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.{GetObjectRequest,
   PutObjectResponse, PutObjectRequest, ListObjectsV2Request}
-import software.amazon.awssdk.core.sync.ResponseTransformer
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class S3(s3Client: S3Client) extends FS {
 

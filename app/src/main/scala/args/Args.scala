@@ -2,7 +2,6 @@ package me.amanj.file.splitter.args
 
 import me.amanj.file.splitter.compression.Compression
 import me.amanj.file.splitter.fs._
-import java.io.File
 import scopt.OptionParser
 import software.amazon.awssdk.regions.Region
 

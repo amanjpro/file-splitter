@@ -2,11 +2,9 @@ package me.amanj.file.splitter.fs
 
 // SSH related imports
 import net.schmizz.sshj.SSHClient
-import net.schmizz.sshj.sftp.{SFTPClient, OpenMode}
-import net.schmizz.sshj.xfer.FileSystemFile
-import net.schmizz.sshj.transport.TransportException
+import net.schmizz.sshj.sftp.OpenMode
 import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts
-import net.schmizz.sshj.common.{DisconnectReason, KeyType, SecurityUtils}
+import net.schmizz.sshj.common.{KeyType, SecurityUtils}
 import java.security.PublicKey
 
 // IO and Misc
@@ -40,7 +38,7 @@ class Sftp(auth: Sftp.Auth) extends FS {
   }
 
   def getStream[T](host: String, port: Int)(get: SSHClient => T): T = {
-    var ssh = new SSHClient
+    val ssh = new SSHClient
     ssh.loadKnownHosts(new File(KnownHosts))
     val hostVerifier =
       new Sftp.OpenSSHKnownHostsInteractive(new File(KnownHosts))

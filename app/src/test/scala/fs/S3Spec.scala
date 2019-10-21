@@ -5,7 +5,7 @@ import software.amazon.awssdk.regions.Region
 
 class S3Spec extends FlatSpec with Matchers {
 
-  var s3 = S3(Region.of("us-east-1"))
+  val s3 = S3(Region.of("us-east-1"))
 
   "separator" should "be /" in {
     s3.separator shouldBe "/"

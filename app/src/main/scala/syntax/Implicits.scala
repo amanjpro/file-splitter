@@ -1,8 +1,6 @@
 package me.amanj.file.splitter.syntax
 
-import java.io.{Reader, InputStream, BufferedReader, Writer,
-  PrintWriter, InputStreamReader, OutputStream, OutputStreamWriter}
-import java.nio.charset.{Charset, StandardCharsets}
+import java.io.{Reader, BufferedReader, Writer, PrintWriter}
 import me.amanj.file.splitter.compression.Compression
 import me.amanj.file.splitter.{Splitter, UnorderedSplitter, OrderedSplitter}
 import me.amanj.file.splitter.fs.FS

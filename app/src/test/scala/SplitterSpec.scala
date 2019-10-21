@@ -3,8 +3,8 @@ package me.amanj.file.splitter
 import me.amanj.file.splitter.fs.LocalFS
 import me.amanj.file.splitter.syntax.Implicits._
 import org.scalatest._
-import java.io.{File, PrintWriter, InputStream}
-import java.nio.file.{Files, Path}
+import java.io.{File, PrintWriter}
+import java.nio.file.Files
 
 class SplitterSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
   var in: String = _

@@ -7,8 +7,7 @@ import java.io.{File, PrintWriter, BufferedReader, InputStreamReader}
 import org.apache.hadoop.fs.{Path => HPath}
 
 // Java interop
-import scala.collection.JavaConverters._
-import org.apache.hadoop.fs.FileSystem
+import scala.jdk.CollectionConverters._
 
 class HDFSSpecIt extends FlatSpec with
   Matchers with BeforeAndAfterEach {

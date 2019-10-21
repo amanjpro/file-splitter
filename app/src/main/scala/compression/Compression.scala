@@ -24,6 +24,8 @@ object Compression {
     compression match {
       case Some("gzip") => Gzip
       case None         => NoCompression
+      case Some(bad)    =>
+        throw new Exception(s"Unsupported compression type $bad")
     }
 
   val supportedCompressions = Seq("none", "gzip")
