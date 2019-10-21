@@ -5,3 +5,8 @@ echo "Setting up the environment"
 
 docker run --detach --rm --name s3mock \
   -p 9090:9090 -p 9191:9191 -t adobe/s3mock
+
+docker run --detach --rm --name hadoop \
+  --net=host \
+  -it sequenceiq/hadoop-docker:2.7.0 \
+  /etc/bootstrap.sh -bash
