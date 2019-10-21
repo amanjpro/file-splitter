@@ -8,9 +8,9 @@ import org.apache.hadoop.fs.{FileSystem, Path}
 class HDFS(rootURI: String = HDFSDefaultRootURI,
   user: String = HDFSDefaultUser,
   home: String = HDFSDefaultHome) extends FS {
-  val hadoopConf = new Configuration
+  private val hadoopConf = new Configuration
 
-  private val fileSystem: FileSystem = {
+  val fileSystem: FileSystem = {
     hadoopConf.set("fs.defaultFS", rootURI)
     hadoopConf.set("fs.hdfs.impl",
       classOf[org.apache.hadoop.hdfs.DistributedFileSystem].getName())
