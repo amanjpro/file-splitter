@@ -43,14 +43,12 @@ class HDFSSpecIt extends FlatSpec with
     hdfs.exists("/") shouldBe true
   }
 
-  // "size" should "return size of the object" in {
-  //   s3Client.putObject(
-  //     PutObjectRequest.builder
-  //       .bucket("foo")
-  //       .key("bar/baz").build, in)
-  //   hdfs.size("s3://foo/bar/baz") shouldBe 1
-  // }
-  //
+  "size" should "return size of the object" in {
+    val fs = FileSystem.get(hdfs.hadoopConf)
+    fs.copyFromLocalFile(new HPath(in.toString),
+      new HPath("/test.txt"))
+    hdfs.size("/test.txt") shouldBe 1
+  }
 
   "source" should "should get input stream of path" in {
     val fs = FileSystem.get(hdfs.hadoopConf)
