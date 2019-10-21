@@ -13,7 +13,7 @@ import org.apache.hadoop.fs.FileSystem
 class HDFSSpecIt extends FlatSpec with
   Matchers with BeforeAndAfterEach {
 
-  val hdfs = new HDFS("http://localhost:9000")
+  val hdfs = new HDFS("hdfs://localhost:9000")
 
   var in: Path = _
   var out: Path = _
