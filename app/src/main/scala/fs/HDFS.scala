@@ -5,7 +5,7 @@ import java.io.{InputStream, OutputStream}
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
 
-class HDFS(rootURI: String = HDFSDefaultRootURI,
+case class HDFS(rootURI: String = HDFSDefaultRootURI,
   user: String = HDFSDefaultUser,
   home: String = HDFSDefaultHome) extends FS {
   private val hadoopConf = new Configuration
