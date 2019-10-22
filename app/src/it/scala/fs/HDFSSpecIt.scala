@@ -12,7 +12,7 @@ import scala.jdk.CollectionConverters._
 class HDFSSpecIt extends FlatSpec with
   Matchers with BeforeAndAfterEach {
 
-  val hdfs = new HDFS("hdfs://localhost:9000", "root")
+  val hdfs = HDFS("hdfs://localhost:9000", "root")
 
   var in: Path = _
   var out: Path = _

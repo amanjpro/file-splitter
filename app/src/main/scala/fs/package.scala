@@ -17,7 +17,7 @@ package object fs {
         root <- config.inputHdfsRootURI
         user <- config.inputHdfsUser
         home <- config.inputHdfsHome
-      } yield new HDFS(root, user, home)
+      } yield HDFS(root, user, home)
       maybeFS.getOrElse(new HDFS)
     } else if(config.input.startsWith("s3://"))
       config.s3InputRegion.map(S3(_)) match {
@@ -27,8 +27,8 @@ package object fs {
     else if(config.input.startsWith("sftp://")) {
       val maybeSftp = config.inputSftpUsername.map { username =>
         config.inputSftpPassword match {
-          case None => new Sftp(Sftp.KeyAuth(username))
-          case Some(password) => new Sftp(Sftp.Login(username, password))
+          case None => Sftp(Sftp.KeyAuth(username))
+          case Some(password) => Sftp(Sftp.Login(username, password))
         }
       }
       maybeSftp match {
@@ -49,7 +49,7 @@ package object fs {
         root <- config.outputHdfsRootURI
         user <- config.outputHdfsUser
         home <- config.outputHdfsHome
-      } yield new HDFS(root, user, home)
+      } yield HDFS(root, user, home)
       maybeFS.getOrElse(new HDFS)
     } else if(config.output.startsWith("s3://"))
       config.s3OutputRegion.map(S3(_)) match {
@@ -59,8 +59,8 @@ package object fs {
     else if(config.output.startsWith("sftp://")) {
       val maybeSftp = config.outputSftpUsername.map { username =>
         config.outputSftpPassword match {
-          case None => new Sftp(Sftp.KeyAuth(username))
-          case Some(password) => new Sftp(Sftp.Login(username, password))
+          case None => Sftp(Sftp.KeyAuth(username))
+          case Some(password) => Sftp(Sftp.Login(username, password))
         }
       }
       maybeSftp match {
