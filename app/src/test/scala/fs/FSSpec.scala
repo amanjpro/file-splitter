@@ -31,6 +31,10 @@ class FSSpec extends FlatSpec with Matchers {
     getInputFS(config.copy(input = "s3://")) shouldBe a [S3]
   }
 
+  it should "throw error if input is S3 but no input region" in {
+    a [MatchError] should be thrownBy getInputFS(Config(input = "s3://"))
+  }
+
   it should "get HDFS when input starts with hdfs:// even when no other option is passed" in {
     getInputFS(Config(input = "hdfs://")) shouldBe HDFS(
       HDFSDefaultRootURI, HDFSDefaultUser, HDFSDefaultHome)
@@ -58,12 +62,20 @@ class FSSpec extends FlatSpec with Matchers {
       new Sftp.KeyAuth(config.inputSftpUsername.get))
   }
 
+  it should "throw error if input is Sftp user is not given" in {
+    a [MatchError] should be thrownBy getInputFS(Config(input = "sftp://"))
+  }
+
   "getOutputFS" should "get StdIO when output is stdout" in {
     getOutputFS(config.copy(output = "stdout")) shouldBe StdIO
   }
 
   it should "get S3 when output starts with s3://" in {
     getOutputFS(config.copy(output = "s3://")) shouldBe a [S3]
+  }
+
+  it should "throw error if output is S3 but no input region" in {
+    a [MatchError] should be thrownBy getOutputFS(Config(output = "s3://"))
   }
 
   it should "get HDFS when output starts with hdfs:// even when no other option is passed" in {
@@ -91,5 +103,9 @@ class FSSpec extends FlatSpec with Matchers {
     getOutputFS(config.copy(output = "sftp://",
       outputSftpPassword = None)) shouldBe Sftp(
       new Sftp.KeyAuth(config.outputSftpUsername.get))
+  }
+
+  it should "throw error if output is Sftp user is not given" in {
+    a [MatchError] should be thrownBy getOutputFS(Config(output = "sftp://"))
   }
 }
