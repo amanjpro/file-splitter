@@ -38,7 +38,7 @@ class HDFSSpecIt extends FlatSpec with
     hdfs.exists("/foo/bar/baz") shouldBe false
   }
 
-  "exists" should "return true when object is found" in {
+  it should "return true when object is found" in {
     hdfs.exists("/") shouldBe true
   }
 

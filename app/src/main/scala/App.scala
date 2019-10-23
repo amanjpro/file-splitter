@@ -3,7 +3,7 @@ package me.amanj.file.splitter
 import me.amanj.file.splitter.fs._
 import me.amanj.file.splitter.compression.Compression
 import me.amanj.file.splitter.syntax.Implicits._
-import me.amanj.file.splitter.args.{ParseArgs, Config}
+import me.amanj.file.splitter.args.{Args, Config}
 import java.io.{PrintWriter, BufferedReader}
 
 object App {
@@ -25,7 +25,7 @@ object App {
     }
 
   def main(args: Array[String]): Unit = {
-    ParseArgs.parser.parse(args, Config()) match {
+    Args.parser.parse(args, Config()) match {
       case Some(config) =>
         // input stream
         val input = config.input

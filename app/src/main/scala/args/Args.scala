@@ -26,21 +26,21 @@ case class Config(
   numberOfParts: Int = 1
 )
 
-object ParseArgs {
+object Args {
   val pad = " " * 8
-  def processCompression(original: Config,
+  private def processCompression(original: Config,
       action: Config => Config,
       compression: String): Config =
     if(compression != "none") action(original)
     else original
 
-  def validateCompression(value: String,
+  private def validateCompression(value: String,
       success: => Either[String, Unit],
       failure: String => Either[String, Unit]): Either[String, Unit] =
     Compression.supportedCompressions.find(_ == value).map(_ => success)
       .getOrElse(failure(s"Unsupported compression type: $value"))
 
-  def validateFS(value: String,
+  private def validateFS(value: String,
       success: => Either[String, Unit],
       failure: String => Either[String, Unit]): Either[String, Unit] = {
     if(SupportedFS.exists(value.startsWith(_))) success
@@ -48,7 +48,7 @@ object ParseArgs {
       failure(s"Unsupported filesystem: $value")
   }
 
-  val pkg = getClass.getPackage
+  private val pkg = getClass.getPackage
   val parser = new OptionParser[Config]("splitter") {
     override def renderingMode = scopt.RenderingMode.OneColumn
     head("splitter", pkg.getImplementationVersion())
@@ -143,8 +143,8 @@ object ParseArgs {
       .action((x, c) => c.copy(outputHdfsHome = Some(x)))
       .text(s"Output HDFS home directory. Default: $HDFSDefaultHome")
 
-    opt[Boolean]("keep-order")
-      .action((x, c) => c.copy(keepOrder = x))
+    opt[Unit]("keep-order")
+      .action((_, c) => c.copy(keepOrder = true))
       .text {
         s"""|Keep the order of the input lines. That is first n
             |${pad}lines go to the first file and so on. This might
@@ -205,24 +205,12 @@ object ParseArgs {
         failure("When output is s3, --s3-output-region should be provided")
       else if (!c.output.startsWith("s3://") && c.s3OutputRegion.isDefined)
         failure("Only when output is s3, --s3-output-region should be provided")
-      else if (c.input.startsWith("hdfs://") && (
-        c.inputHdfsHome.isEmpty || c.inputHdfsUser.isEmpty
-          || c.inputHdfsRootURI.isEmpty))
-        failure(
-          """|When input is hdfs, --input-hdfs-home-dir, --input-hdfs-user,
-             |and --input-hdfs-root-uri should be provided""".stripMargin)
       else if (!c.input.startsWith("hdfs://") && (
         c.inputHdfsHome.isDefined || c.inputHdfsUser.isDefined
           || c.inputHdfsRootURI.isDefined))
         failure(
           """|Only when input is hdfs, --input-hdfs-home-dir, --input-hdfs-user,
              |and --input-hdfs-root-uri should be provided""".stripMargin)
-      else if (c.output.startsWith("hdfs://") && (
-        c.outputHdfsHome.isEmpty || c.outputHdfsUser.isEmpty
-          || c.outputHdfsRootURI.isEmpty))
-        failure(
-          """|When output is hdfs, --output-hdfs-home-dir, --output-hdfs-user,
-             |and --output-hdfs-root-uri should be provided""".stripMargin)
       else if (!c.output.startsWith("hdfs://") && (
         c.outputHdfsHome.isDefined || c.outputHdfsUser.isDefined
           || c.outputHdfsRootURI.isDefined))
