@@ -19,7 +19,7 @@ class S3Spec extends FlatSpec with Matchers {
     s3.bucket("s3://my_b/my_p/kk") shouldBe "my_b"
   }
 
-  "bucket" should "return the bucket part of s3://my_b" in {
+  it should "return the bucket part of s3://my_b" in {
     s3.bucket("s3://my_b") shouldBe "my_b"
   }
 

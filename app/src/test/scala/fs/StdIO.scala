@@ -17,7 +17,7 @@ class StdIOFSSpec extends FlatSpec with Matchers {
     StdIO.exists("stdout.gz") shouldBe false
   }
 
-  "exists" should "return true for stdin" in {
+  it should "return true for stdin" in {
     StdIO.exists("stdin") shouldBe true
   }
 }

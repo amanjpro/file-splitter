@@ -13,12 +13,12 @@ class SftpSpec extends FlatSpec with Matchers {
     Sftp(login).extractFilePath(path) shouldBe path
   }
 
-  "extractFilePath" should "extract the file path when port is absent" in {
+  it should "extract the file path when port is absent" in {
     val path = "sftp://host/ak/am"
     Sftp(login).extractFilePath(path) shouldBe path
   }
 
-  "extractFilePath" should "extract the file path when path is in home" in {
+  it should "extract the file path when path is in home" in {
     val path = "sftp://host:2/ak"
     Sftp(login).extractFilePath(path) shouldBe path
   }
@@ -27,11 +27,11 @@ class SftpSpec extends FlatSpec with Matchers {
     Sftp(login).remoteFile("sftp://host:1/ak/am") shouldBe "ak/am"
   }
 
-  "remoteFile" should "extract the file path when port is absent" in {
+  it should "extract the file path when port is absent" in {
     Sftp(login).remoteFile("sftp://host/ak/am") shouldBe "ak/am"
   }
 
-  "remoteFile" should "extract the file path when path is in home" in {
+  it should "extract the file path when path is in home" in {
     Sftp(login).remoteFile("sftp://host:2/ak") shouldBe "ak"
   }
 
@@ -39,7 +39,7 @@ class SftpSpec extends FlatSpec with Matchers {
     Sftp(login).port("sftp://host:2/ak") shouldBe 2
   }
 
-  "port" should "return 22 when the port is not specified" in {
+  it should "return 22 when the port is not specified" in {
     Sftp(login).port("sftp://host/ak") shouldBe 22
   }
 
@@ -47,11 +47,11 @@ class SftpSpec extends FlatSpec with Matchers {
     Sftp(login).host("sftp://host:1/ak/am") shouldBe "host"
   }
 
-  "host" should "extract the host name when port is absent" in {
+  it should "extract the host name when port is absent" in {
     Sftp(login).host("sftp://host/ak/am") shouldBe "host"
   }
 
-  "host" should "extract the host name when path is in home" in {
+  it should "extract the host name when path is in home" in {
     Sftp(login).host("sftp://host:2/ak") shouldBe "host"
   }
 }

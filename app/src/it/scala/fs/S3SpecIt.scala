@@ -71,7 +71,7 @@ class S3SpecIt extends FlatSpec with
     new S3(s3Client).exists("s3://foo/bar/baz") shouldBe false
   }
 
-  "exists" should "return true when object is found" in {
+  it should "return true when object is found" in {
     s3Client.putObject(
       PutObjectRequest.builder
         .bucket("foo")
