@@ -4,7 +4,7 @@ import org.scalatest._
 
 import java.nio.file.{Files, Path}
 //import java.io.{File, PrintWriter, BufferedReader, InputStreamReader}
-import java.io.{File, PrintWriter} //, BufferedReader, InputStreamReader}
+import java.io.{File, PrintWriter, ByteArrayInputStream} //, BufferedReader, InputStreamReader}
 
 // Java interop
 // import scala.jdk.CollectionConverters._
@@ -12,14 +12,23 @@ import java.io.{File, PrintWriter} //, BufferedReader, InputStreamReader}
 class SftpSpecIt extends FlatSpec with
   Matchers with BeforeAndAfterEach {
 
-  //println(getClass.getResource("/ssh/known_hosts").getFile)
   val sftp: Sftp = new Sftp(Sftp.Login("bar", "baz"))
-    //getClass.getResource("/ssh/known_hosts").getFile)
 
   var in: Path = _
   var out: Path = _
 
+  def say(word: String): Unit = {
+    System.setIn(new ByteArrayInputStream(word.getBytes()));
+  }
+
+  implicit class StrExt(parent: String) {
+    def /(child: String): String =
+      s"${parent}${File.separator}$child"
+  }
+
   override def afterEach(): Unit = {
+    val home = System.getProperty("user.home")
+    new File(home / ".ssh" / "known_hosts")
     new File(in.toString).delete
     new File(out.toString).delete
     super.afterEach
@@ -37,10 +46,12 @@ class SftpSpecIt extends FlatSpec with
   }
 
   "exists" should "return false when object is not found" in {
+    say("yes")
     sftp.exists("sftp://localhost:2222/home/foo/nope") shouldBe false
   }
 
   it should "return true when object is found" in {
+    say("yes")
     sftp.exists("sftp://localhost:2222/home/foo") shouldBe false
   }
   //
