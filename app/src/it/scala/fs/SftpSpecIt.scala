@@ -54,21 +54,21 @@ class SftpSpecIt extends FlatSpec with
 
   "exists" should "return false when object is not found" in {
     val exists = yes {
-      sftp.exists("sftp://localhost:2222/home/foo/nope")
+      sftp.exists("sftp://localhost:2222/nope")
     }
     exists shouldBe false
   }
 
   it should "return true when object is found" in {
     val exists = yes {
-      sftp.exists("sftp://localhost:2222/home/foo")
+      sftp.exists("sftp://localhost:2222/test")
     }
     exists shouldBe false
   }
 
   "size" should "return size of the object" in {
     val size = yes {
-      sftp.size("sftp://localhost:2222//home/bar/upload/test")
+      sftp.size("sftp://localhost:2222/upload/test")
     }
     size shouldBe 1
   }
@@ -78,7 +78,7 @@ class SftpSpecIt extends FlatSpec with
     val lines = yes {
       new BufferedReader(
         new InputStreamReader(
-          sftp.source("sftp://localhost:2222//home/bar/upload/test")
+          sftp.source("sftp://localhost:2222/upload/test")
         )
       ).lines.iterator.asScala.toList
     }
@@ -89,14 +89,14 @@ class SftpSpecIt extends FlatSpec with
   "sink" should "should get output stream of path" in {
     yes {
       val printer = new PrintWriter(
-        sftp.sink("sftp://localhost:2222/home/bar//home/bar/upload/test2"))
+        sftp.sink("sftp://localhost:2222/upload/test2"))
       printer.print("2")
       printer.close
     }
 
     val lines = new BufferedReader(
       new InputStreamReader(
-        sftp.source("sftp://localhost:2222/home/bar//home/bar/upload/test2")
+        sftp.source("sftp://localhost:2222/upload/test2")
       )
     ).lines.iterator.asScala.toList
 
