@@ -15,7 +15,7 @@ class SftpSpecIt extends FlatSpec with
   var out: Path = _
 
   val knownHosts = "" / "tmp" / "ssh_known_hosts"
-  val sftp: Sftp = new Sftp(Sftp.Login("bar", "baz"), knownHosts)
+  val sftp = new Sftp(Sftp.Login("bar", "baz"), knownHosts)
 
   implicit class StrExt(parent: String) {
     def /(child: String): String =
@@ -54,14 +54,14 @@ class SftpSpecIt extends FlatSpec with
 
   "exists" should "return false when object is not found" in {
     val exists = yes {
-      sftp.exists("sftp://localhost:2222/nope")
+      sftp.exists("sftp://localhost:2222/upload/nope")
     }
     exists shouldBe false
   }
 
   it should "return true when object is found" in {
     val exists = yes {
-      sftp.exists("sftp://localhost:2222/test")
+      sftp.exists("sftp://localhost:2222/upload/test")
     }
     exists shouldBe false
   }
