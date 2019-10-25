@@ -4,7 +4,7 @@ import org.scalatest._
 
 import java.nio.file.{Files, Path}
 //import java.io.{File, PrintWriter, BufferedReader, InputStreamReader}
-import java.io.{File, PrintWriter, ByteArrayInputStream} //, BufferedReader, InputStreamReader}
+import java.io.{File, PrintWriter, StringReader} //, BufferedReader, InputStreamReader}
 
 // Java interop
 // import scala.jdk.CollectionConverters._
@@ -16,10 +16,6 @@ class SftpSpecIt extends FlatSpec with
 
   var in: Path = _
   var out: Path = _
-
-  def say(word: String): Unit = {
-    System.setIn(new ByteArrayInputStream(s"$word\n".getBytes()));
-  }
 
   implicit class StrExt(parent: String) {
     def /(child: String): String =
@@ -46,13 +42,17 @@ class SftpSpecIt extends FlatSpec with
   }
 
   "exists" should "return false when object is not found" in {
-    say("yes")
-    sftp.exists("sftp://localhost:2222/home/foo/nope") shouldBe false
+    val answer = Console.withIn(new StringReader("yes\n")) {
+      sftp.exists("sftp://localhost:2222/home/foo/nope")
+    }
+    answer shouldBe false
   }
 
   it should "return true when object is found" in {
-    say("yes")
-    sftp.exists("sftp://localhost:2222/home/foo") shouldBe false
+    val answer = Console.withIn(new StringReader("yes\n")) {
+      sftp.exists("sftp://localhost:2222/home/foo")
+    }
+    answer shouldBe false
   }
   //
   // "size" should "return size of the object" in {
