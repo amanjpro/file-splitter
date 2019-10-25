@@ -18,7 +18,7 @@ class SftpSpecIt extends FlatSpec with
   var out: Path = _
 
   def say(word: String): Unit = {
-    System.setIn(new ByteArrayInputStream(word.getBytes()));
+    System.setIn(new ByteArrayInputStream(s"$word\n".getBytes()));
   }
 
   implicit class StrExt(parent: String) {
