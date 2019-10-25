@@ -13,7 +13,7 @@ class SftpSpecIt extends FlatSpec with
   Matchers with BeforeAndAfterEach {
 
   val sftp: Sftp = new Sftp(Sftp.Login("bar", "baz"),
-    "/ssh/known_hosts")
+    getClass.getResource("/ssh/known_hosts").getFile)
 
   var in: Path = _
   var out: Path = _
