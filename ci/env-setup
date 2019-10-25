@@ -20,6 +20,7 @@ SCRIPT_DIR="$(cd "$(dirname "$(which "$0")")" >/dev/null; pwd -P)"
 
 mkdir -p "$SCRIPT_DIR/../app/src/it/resources/ssh"
 touch "$SCRIPT_DIR/../app/src/it/resources/ssh/known_hosts"
+printf 1 > "test"
 # cp "$SCRIPT_DIR/known_hosts" "$SCRIPT_DIR/../app/src/it/resources/ssh/"
 # cp "$SCRIPT_DIR/test_private_key" "$SCRIPT_DIR/../app/src/it/resources/ssh/id_rsa"
 
@@ -33,6 +34,7 @@ docker run --detach --rm --name hadoop \
 
 docker run  --detach --rm --name sftp \
   -v "$SCRIPT_DIR/test_public_key.pub:/home/foo/.ssh/keys/id_rsa.pub:ro" \
+  -v "$SCRIPT_DIR/test:/home/bar/test" \
   -p 2222:22 atmoz/sftp \
   bar:baz:1001 \
   foo::1001
@@ -41,7 +43,3 @@ docker run  --detach --rm --name sftp \
 
 ssh-keyscan -H -t ed25519,dsa,rsa,ecdsa -p 2222 localhost > ~/.ssh/known_hosts
 
-printf 1 > "test"
-sftp foo@localhost -P 2222 <<EOF
-put test /home/foo/test
-EOF
