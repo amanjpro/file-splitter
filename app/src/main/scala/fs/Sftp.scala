@@ -12,7 +12,9 @@ import java.util.EnumSet
 import java.io.{InputStream, OutputStream, File, IOException}
 import scala.io.StdIn
 
-case class Sftp(auth: Sftp.Auth) extends FS {
+case class Sftp(auth: Sftp.Auth,
+    knownHosts: String = Sftp.KnownHosts,
+    publicKeyLocations: Array[String] = Sftp.PublicKeyLocations) extends FS {
   private val scheme = "sftp://"
   private val host = "[^/:]+"
   private val port = "\\d+"
@@ -33,14 +35,14 @@ case class Sftp(auth: Sftp.Auth) extends FS {
 
   def getStream[T](host: String, port: Int)(get: SSHClient => T): T = {
     val ssh = new SSHClient
-    ssh.loadKnownHosts(new File(Sftp.KnownHosts))
+    ssh.loadKnownHosts(new File(knownHosts))
     val hostVerifier =
-      new Sftp.OpenSSHKnownHostsInteractive(new File(Sftp.KnownHosts))
+      new Sftp.OpenSSHKnownHostsInteractive(new File(knownHosts))
     ssh.addHostKeyVerifier(hostVerifier)
     ssh.connect(host, port)
     auth match {
       case Sftp.KeyAuth(username) =>
-        ssh.authPublickey(username, Sftp.PublicKeyLocations: _*)
+        ssh.authPublickey(username, publicKeyLocations: _*)
       case Sftp.Login(username, password) =>
         ssh.authPassword(username, password)
     }
