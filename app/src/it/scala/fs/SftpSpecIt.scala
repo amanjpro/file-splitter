@@ -68,7 +68,7 @@ class SftpSpecIt extends FlatSpec with
 
   "size" should "return size of the object" in {
     val size = yes {
-      sftp.size("sftp://localhost:2222/test")
+      sftp.size("sftp://localhost:2222//home/bar/upload/test")
     }
     size shouldBe 1
   }
@@ -78,7 +78,7 @@ class SftpSpecIt extends FlatSpec with
     val lines = yes {
       new BufferedReader(
         new InputStreamReader(
-          sftp.source("sftp://localhost:2222/test")
+          sftp.source("sftp://localhost:2222//home/bar/upload/test")
         )
       ).lines.iterator.asScala.toList
     }
@@ -89,14 +89,14 @@ class SftpSpecIt extends FlatSpec with
   "sink" should "should get output stream of path" in {
     yes {
       val printer = new PrintWriter(
-        sftp.sink("sftp://localhost:2222/test2"))
+        sftp.sink("sftp://localhost:2222/home/bar//home/bar/upload/test2"))
       printer.print("2")
       printer.close
     }
 
     val lines = new BufferedReader(
       new InputStreamReader(
-        sftp.source("sftp://localhost:2222/test1")
+        sftp.source("sftp://localhost:2222/home/bar//home/bar/upload/test2")
       )
     ).lines.iterator.asScala.toList
 
