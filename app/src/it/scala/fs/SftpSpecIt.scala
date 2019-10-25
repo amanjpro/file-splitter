@@ -3,11 +3,11 @@ package me.amanj.file.splitter.fs
 import org.scalatest._
 
 import java.nio.file.{Files, Path}
-//import java.io.{File, PrintWriter, BufferedReader, InputStreamReader}
-import java.io.{File, PrintWriter, StringReader} //, BufferedReader, InputStreamReader}
+import java.io.{File, PrintWriter, BufferedReader, InputStreamReader, StringReader}
+// import java.io.{File, PrintWriter, StringReader} //, BufferedReader, InputStreamReader}
 
 // Java interop
-// import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters._
 
 class SftpSpecIt extends FlatSpec with
   Matchers with BeforeAndAfterEach {
@@ -68,36 +68,39 @@ class SftpSpecIt extends FlatSpec with
 
   "size" should "return size of the object" in {
     val size = yes {
-      sftp.size("/home/bar/test")
+      sftp.size("sftp://localhost:2222/home/bar/test")
     }
     size shouldBe 1
   }
 
-  //
-  // "source" should "should get input stream of path" in {
-  //   hdfs.fileSystem.copyFromLocalFile(new HPath(in.toString),
-  //     new HPath("/user/root/test.txt"))
-  //
-  //   val lines = new BufferedReader(
-  //     new InputStreamReader(
-  //       hdfs.source("/user/root/test.txt")
-  //     )
-  //   ).lines.iterator.asScala.toList
-  //   lines shouldBe List("1")
-  // }
-  //
-  // "sink" should "should get output stream of path" in {
-  //   val printer = new PrintWriter(
-  //     hdfs.sink("/user/root/test2"))
-  //   printer.print("2")
-  //   printer.close
-  //
-  //   val lines = new BufferedReader(
-  //     new InputStreamReader(
-  //       hdfs.source("/user/root/test2")
-  //     )
-  //   ).lines.iterator.asScala.toList
-  //   lines shouldBe List("2")
-  // }
+
+  "source" should "should get input stream of path" in {
+    val lines = yes {
+      new BufferedReader(
+        new InputStreamReader(
+          sftp.source("sftp://localhost:2222/home/bar/test")
+        )
+      ).lines.iterator.asScala.toList
+    }
+
+    lines shouldBe List("1")
+  }
+
+  "sink" should "should get output stream of path" in {
+    yes {
+      val printer = new PrintWriter(
+        sftp.sink("sftp://localhost:2222/user/bar/test2"))
+      printer.print("2")
+      printer.close
+    }
+
+    val lines = new BufferedReader(
+      new InputStreamReader(
+        sftp.source("sftp://localhost:2222/home/bar/test")
+      )
+    ).lines.iterator.asScala.toList
+
+    lines shouldBe List("2")
+  }
 }
 
