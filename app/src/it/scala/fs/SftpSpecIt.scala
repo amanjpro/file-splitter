@@ -28,7 +28,7 @@ class SftpSpecIt extends FlatSpec with
 
   override def afterEach(): Unit = {
     val home = System.getProperty("user.home")
-    new File(home / ".ssh" / "known_hosts")
+    new File(home / ".ssh" / "known_hosts").delete
     new File(in.toString).delete
     new File(out.toString).delete
     super.afterEach
