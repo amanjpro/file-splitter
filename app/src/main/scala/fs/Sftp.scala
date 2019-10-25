@@ -162,6 +162,7 @@ object Sftp {
             true
           }
         case _ =>
+          println(s"SHOOOT, answer was $answer")
           false
       }
     }
