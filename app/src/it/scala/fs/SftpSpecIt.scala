@@ -68,7 +68,7 @@ class SftpSpecIt extends FlatSpec with
 
   "size" should "return size of the object" in {
     val size = yes {
-      sftp.size("/home/foo/test")
+      sftp.size("/home/bar/test")
     }
     size shouldBe 1
   }
