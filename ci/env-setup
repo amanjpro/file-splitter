@@ -3,6 +3,24 @@ set -o errexit -o nounset -o pipefail
 
 echo "Setting up the environment"
 
+# shellcheck disable=SC2230
+SCRIPT_DIR="$(cd "$(dirname "$(which "$0")")" >/dev/null; pwd -P)"
+
+echo -e 'y\n' | ssh-keygen -q -N "" -t ed25519 -f "$SCRIPT_DIR/ssh_host_ed25519_key" < /dev/null
+echo -e 'y\n' | ssh-keygen -q -N "" -t rsa -b 4096 -f "$SCRIPT_DIR/ssh_host_rsa_key" < /dev/null
+
+chmod 600 "$SCRIPT_DIR/ssh_host_rsa_key"
+chmod 600 "$SCRIPT_DIR/ssh_host_ed25519_key"
+
+
+cat "$SCRIPT_DIR/ssh_host_rsa_key.pub" > "$SCRIPT_DIR/known_hosts"
+cat "$SCRIPT_DIR/ssh_host_ed25519_key.pub" >> "$SCRIPT_DIR/known_hosts"
+chmod 600 "$SCRIPT_DIR/known_hosts"
+
+mkdir -p "$SCRIPT_DIR/../app/it/resources/ssh"
+cp "$SCRIPT_DIR/known_hosts" "$SCRIPT_DIR/../app/it/resources/ssh/"
+cp "$SCRIPT_DIR/test_private_key" "$SCRIPT_DIR/../app/it/resources/ssh/id_rsa"
+
 docker run --detach --rm --name s3mock \
   -p 9090:9090 -p 9191:9191 -t adobe/s3mock
 
@@ -10,3 +28,11 @@ docker run --detach --rm --name hadoop \
   -p 9000:9000 \
   -it sequenceiq/hadoop-docker:2.7.0 \
   /etc/bootstrap.sh -bash
+
+docker run  --detach --rm --name sftp \
+  -v "$SCRIPT_DIR/test_public_key.pub:/home/foo/.ssh/keys/id_rsa.pub:ro" \
+  -v "$SCRIPT_DIR/ssh_host_rsa_key":/etc/ssh/ssh_host_rsa_key \
+  -v "$SCRIPT_DIR/ssh_host_ed25519_key":/etc/ssh/ssh_host_ed25519_key \
+  -p 2222:22 atmoz/sftp \
+  bar:baz:1001 \
+  foo::1001
