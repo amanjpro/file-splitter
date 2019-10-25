@@ -12,9 +12,9 @@ import java.io.{File, PrintWriter} //, BufferedReader, InputStreamReader}
 class SftpSpecIt extends FlatSpec with
   Matchers with BeforeAndAfterEach {
 
-  println(getClass.getResource("/ssh/known_hosts").getFile)
-  val sftp: Sftp = new Sftp(Sftp.Login("bar", "baz"),
-    getClass.getResource("/ssh/known_hosts").getFile)
+  //println(getClass.getResource("/ssh/known_hosts").getFile)
+  val sftp: Sftp = new Sftp(Sftp.Login("bar", "baz"))
+    //getClass.getResource("/ssh/known_hosts").getFile)
 
   var in: Path = _
   var out: Path = _
