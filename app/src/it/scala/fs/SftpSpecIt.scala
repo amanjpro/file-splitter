@@ -11,22 +11,33 @@ import java.io.{File, PrintWriter, StringReader} //, BufferedReader, InputStream
 
 class SftpSpecIt extends FlatSpec with
   Matchers with BeforeAndAfterEach {
-
-  val sftp: Sftp = new Sftp(Sftp.Login("bar", "baz"))
-
   var in: Path = _
   var out: Path = _
+
+  val knownHosts = "" / "tmp" / "ssh_known_hosts"
+  val sftp: Sftp = new Sftp(Sftp.Login("bar", "baz"), knownHosts)
 
   implicit class StrExt(parent: String) {
     def /(child: String): String =
       s"${parent}${File.separator}$child"
   }
 
+  def yes[T](action: => T): T = {
+    Console.withIn(new StringReader("yes\n")) {
+      action
+    }
+  }
+
+  def no[T](action: => T): T = {
+    Console.withIn(new StringReader("no\n")) {
+      action
+    }
+  }
+
   override def afterEach(): Unit = {
-    val home = System.getProperty("user.home")
-    new File(home / ".ssh" / "known_hosts").delete
     new File(in.toString).delete
     new File(out.toString).delete
+    new File(knownHosts).delete
     super.afterEach
   }
 
@@ -42,24 +53,26 @@ class SftpSpecIt extends FlatSpec with
   }
 
   "exists" should "return false when object is not found" in {
-    val answer = Console.withIn(new StringReader("yes\n")) {
+    val exists = yes {
       sftp.exists("sftp://localhost:2222/home/foo/nope")
     }
-    answer shouldBe false
+    exists shouldBe false
   }
 
   it should "return true when object is found" in {
-    val answer = Console.withIn(new StringReader("yes\n")) {
+    val exists = yes {
       sftp.exists("sftp://localhost:2222/home/foo")
     }
-    answer shouldBe false
+    exists shouldBe false
   }
-  //
-  // "size" should "return size of the object" in {
-  //   hdfs.fileSystem.copyFromLocalFile(new HPath(in.toString),
-  //     new HPath("/user/root/test.txt"))
-  //   hdfs.size("/user/root/test.txt") shouldBe 1
-  // }
+
+  "size" should "return size of the object" in {
+    val size = yes {
+      sftp.size("/home/foo/test")
+    }
+    size shouldBe 1
+  }
+
   //
   // "source" should "should get input stream of path" in {
   //   hdfs.fileSystem.copyFromLocalFile(new HPath(in.toString),

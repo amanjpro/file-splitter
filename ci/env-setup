@@ -40,3 +40,8 @@ docker run  --detach --rm --name sftp \
   # -v "$SCRIPT_DIR/ssh_host_ed25519_key":/etc/ssh/ssh_host_ed25519_key \
 
 ssh-keyscan -H -t ed25519,dsa,rsa,ecdsa -p 2222 localhost > ~/.ssh/known_hosts
+
+printf 1 > "test"
+sftp foo@localhost -P 2222 <<EOF
+put test /home/foo/test
+EOF
