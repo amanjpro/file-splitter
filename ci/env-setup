@@ -34,7 +34,7 @@ docker run --detach --rm --name hadoop \
 
 docker run  --detach --rm --name sftp \
   -v "$SCRIPT_DIR/test_public_key.pub:/home/foo/.ssh/keys/id_rsa.pub:ro" \
-  -v "$SCRIPT_DIR/test:/home/bar/test" \
+  -v "$SCRIPT_DIR/test:/home/bar/test:ro" \
   -p 2222:22 atmoz/sftp \
   bar:baz:1001 \
   foo::1001
