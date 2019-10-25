@@ -96,7 +96,7 @@ class SftpSpecIt extends FlatSpec with
 
     val lines = new BufferedReader(
       new InputStreamReader(
-        sftp.source("sftp://localhost:2222/test")
+        sftp.source("sftp://localhost:2222/test1")
       )
     ).lines.iterator.asScala.toList
 
