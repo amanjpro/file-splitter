@@ -17,9 +17,9 @@ cat "$SCRIPT_DIR/ssh_host_rsa_key.pub" > "$SCRIPT_DIR/known_hosts"
 cat "$SCRIPT_DIR/ssh_host_ed25519_key.pub" >> "$SCRIPT_DIR/known_hosts"
 chmod 600 "$SCRIPT_DIR/known_hosts"
 
-mkdir -p "$SCRIPT_DIR/../app/it/resources/ssh"
-cp "$SCRIPT_DIR/known_hosts" "$SCRIPT_DIR/../app/it/resources/ssh/"
-cp "$SCRIPT_DIR/test_private_key" "$SCRIPT_DIR/../app/it/resources/ssh/id_rsa"
+mkdir -p "$SCRIPT_DIR/../app/src/it/resources/ssh"
+cp "$SCRIPT_DIR/known_hosts" "$SCRIPT_DIR/../app/src/it/resources/ssh/"
+cp "$SCRIPT_DIR/test_private_key" "$SCRIPT_DIR/../app/src/it/resources/ssh/id_rsa"
 
 docker run --detach --rm --name s3mock \
   -p 9090:9090 -p 9191:9191 -t adobe/s3mock
