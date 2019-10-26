@@ -54,6 +54,7 @@ SBT takes care of building/testing and integration testing:
 - First run `ci/env-setup`. This starts the docker instances for S3mock, Hadoop
   and SFTP for integration testing
 - Then: `sbt clean test it:test package`
+- Once done, run `ci/env-teardown`
 
 ## Supported options
 
