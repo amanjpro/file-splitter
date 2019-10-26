@@ -31,6 +31,12 @@ object App {
         val input = config.input
         val inputFS = getInputFS(config)
         val inFile = inputFS.extractFilePath(input)
+
+        if(!inputFS.exists(inFile)) {
+          println(s"$inFile does not exist, quitting...")
+          System.exit(1)
+        }
+
         val inCompression =
           Compression.toCompression(config.inputCompression)
         val source = getSource(inCompression, input, inputFS)
@@ -43,10 +49,9 @@ object App {
         val partNames =
           getPartNames(output, outputFS.separator,
             config.numberOfParts, outCompression.extension)
-        val dest = getSinks(outCompression, partNames, outputFS)
 
-        if(inputFS.exists(inFile) &&
-          partNames.forall(! outputFS.exists(_))) {
+        if(partNames.forall(! outputFS.exists(_))) {
+          val dest = getSinks(outCompression, partNames, outputFS)
           if(config.keepOrder)
             source
               .ordered(
@@ -56,9 +61,6 @@ object App {
             source
               .unordered
               .sinks(dest.toArray)
-        } else if(! inputFS.exists(inFile)) {
-          println(s"$inFile does not exist, quitting...")
-          System.exit(1)
         } else {
           partNames.filter(outputFS.exists(_)).foreach { part =>
             println(s"$part exists, cannot override...")

@@ -5,11 +5,11 @@ import java.nio.file.Files
 import org.scalatest._
 
 class NoCompressionSpec extends FlatSpec with Matchers {
-  "compressionFactor" should "1" in {
+  "compressionFactor" should "be 1" in {
     NoCompression.compressionFactor shouldBe 1
   }
 
-  "extension" should "" in {
+  "extension" should "be empty" in {
     NoCompression.extension shouldBe ""
   }
 
