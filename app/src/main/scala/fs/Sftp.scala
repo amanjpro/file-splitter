@@ -71,7 +71,7 @@ case class Sftp(auth: Sftp.Auth,
           EnumSet.of(OpenMode.WRITE, OpenMode.CREAT))
       } catch {
         case e: IOException =>
-          println(e.getMessage)
+          println(e.toString)
           ???
       }
       new handle.RemoteFileOutputStream() {
@@ -164,7 +164,6 @@ object Sftp {
             true
           }
         case _ =>
-          println(s"SHOOOT, answer was $answer")
           false
       }
     }

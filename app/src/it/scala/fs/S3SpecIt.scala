@@ -88,7 +88,7 @@ class S3SpecIt extends FlatSpec with
     new S3(s3Client).size("s3://foo/bar/baz") shouldBe 1
   }
 
-  "source" should "should get input stream of path" in {
+  "source" should "get input stream of path" in {
     s3Client.putObject(
       PutObjectRequest.builder
         .bucket("foo")
@@ -101,7 +101,7 @@ class S3SpecIt extends FlatSpec with
     lines shouldBe List("1")
   }
 
-  "sink" should "should get output stream of path" in {
+  "sink" should "get output stream of path" in {
     val printer = new PrintWriter(
       new S3(s3Client).sink("s3://foo/bar/baz"))
     printer.print("2")

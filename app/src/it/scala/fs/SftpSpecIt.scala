@@ -3,8 +3,8 @@ package me.amanj.file.splitter.fs
 import org.scalatest._
 
 import java.nio.file.{Files, Path}
-import java.io.{File, PrintWriter, BufferedReader, InputStreamReader, StringReader}
-// import java.io.{File, PrintWriter, StringReader} //, BufferedReader, InputStreamReader}
+import java.io.{File, PrintWriter, BufferedReader,
+  InputStreamReader, StringReader, ByteArrayOutputStream}
 
 // Java interop
 import scala.jdk.CollectionConverters._
@@ -74,19 +74,22 @@ class SftpSpecIt extends FlatSpec with
   }
 
 
-  "source" should "should get input stream of path" in {
+  "source" should "get input stream of path" in {
     val lines = yes {
-      new BufferedReader(
+      val reader = new BufferedReader(
         new InputStreamReader(
           sftp.source("sftp://localhost:2222/upload/test")
         )
-      ).lines.iterator.asScala.toList
+      )
+      val lines = reader.lines.iterator.asScala.toList
+      reader.close
+      lines
     }
 
     lines shouldBe List("1")
   }
 
-  "sink" should "should get output stream of path" in {
+  "sink" should "get output stream of path" in {
     yes {
       val printer = new PrintWriter(
         sftp.sink("sftp://localhost:2222/upload/test2"))
@@ -101,6 +104,40 @@ class SftpSpecIt extends FlatSpec with
     ).lines.iterator.asScala.toList
 
     lines shouldBe List("2")
+  }
+
+  "Sftp" should "ask for confirmation when the server is unknown" in {
+    val out = new ByteArrayOutputStream()
+    Console.withOut(out) {
+      yes {
+        sftp.exists("sftp://localhost:2222/upload/test")
+      }
+    }
+    out.toString should (include(
+      "Are you sure you want to continue connecting? [yes/no]"))
+  }
+
+  "Sftp" should "not ask for confirmation when the server is known" in {
+    yes {
+      sftp.exists("sftp://localhost:2222/upload/test")
+    }
+
+    sftp.exists("sftp://localhost:2222/upload/test") shouldBe true
+  }
+
+  "Sftp" should "should be able to verify by public/private key" in {
+    val locations = Array(
+        getClass.getResource("/ssh/id_rsa").getFile)
+
+    val sftp = new Sftp(Sftp.KeyAuth("bar"),
+      publicKeyLocations = locations)
+    val answer = yes {
+      sftp.exists("sftp://localhost:2222/upload/test")
+    }
+
+    answer shouldBe true
+
+    sftp.exists("sftp://localhost:2222/upload/test") shouldBe true
   }
 }
 
