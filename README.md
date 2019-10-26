@@ -38,7 +38,7 @@ it.
     bin/splitter -i stdin -o file:///tmp/parts -n 9
   ```
 
-## Building from teh source
+## Development
 
 ### Requirements
 
