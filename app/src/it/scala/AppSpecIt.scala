@@ -146,8 +146,10 @@ class AppSpecIt extends FlatSpec with
   it should "fail if output exists" in {
     val args = Array (
       "-i", s"file://${in.toString}",
-      "-9", s"file://${in.toString}",
+      "-o", s"file://${outDir.toString}",
     )
+
+    new File(s"${outDir.toString}/part-00000").createNewFile
 
     System.setSecurityManager(new NoExitSecurityManager())
     try {
