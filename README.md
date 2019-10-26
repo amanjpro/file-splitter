@@ -2,7 +2,13 @@
 
 [![Build Status](https://travis-ci.org/amanjpro/file-splitter.svg?branch=master)](https://travis-ci.org/amanjpro/file-splitter) [![codecov](https://codecov.io/gh/amanjpro/file-splitter/branch/master/graph/badge.svg)](https://codecov.io/gh/amanjpro/file-splitter)
 
-A very simple utility to split large files into smaller ones.
+A very simple utility to split large files into smaller ones. This utility is
+usually useful when a thirdparty data provider sends a gigantic gzip file, and
+you want to process it in Spark (or any other big data tool). As it is a waste
+of resources, to have the whole cluster started to re-partition this file then
+perform the rest of the ETL logic on it, you can first use this tool to split
+the file into smaller pieces and then start a resource hungry job to process
+it.
 
 ## Supported IO (file?) systems:
   - Local file system
