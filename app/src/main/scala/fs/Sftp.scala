@@ -67,10 +67,12 @@ case class Sftp(auth: Sftp.Auth,
     getStream(host(path), port(path)) { case ssh =>
       val client = ssh.newSFTPClient
       val handle = try {
-        client.open(remoteFile(path), EnumSet.of(OpenMode.WRITE))
+        client.open(remoteFile(path),
+          EnumSet.of(OpenMode.WRITE, OpenMode.CREAT))
       } catch {
-        case _: IOException =>
-          client.open(remoteFile(path), EnumSet.of(OpenMode.CREAT))
+        case e: IOException =>
+          println(e.getMessage)
+          ???
       }
       new handle.RemoteFileOutputStream() {
           override def close(): Unit = {
