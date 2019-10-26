@@ -48,7 +48,7 @@ class HDFSSpecIt extends FlatSpec with
     hdfs.size("/user/root/test.txt") shouldBe 1
   }
 
-  "source" should "should get input stream of path" in {
+  "source" should "get input stream of path" in {
     hdfs.fileSystem.copyFromLocalFile(new HPath(in.toString),
       new HPath("/user/root/test.txt"))
 
@@ -60,7 +60,7 @@ class HDFSSpecIt extends FlatSpec with
     lines shouldBe List("1")
   }
 
-  "sink" should "should get output stream of path" in {
+  "sink" should "get output stream of path" in {
     val printer = new PrintWriter(
       hdfs.sink("/user/root/test2"))
     printer.print("2")
