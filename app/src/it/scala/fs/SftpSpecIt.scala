@@ -89,14 +89,14 @@ class SftpSpecIt extends FlatSpec with
   "sink" should "should get output stream of path" in {
     yes {
       val printer = new PrintWriter(
-        sftp.sink("sftp://localhost:2222/upload/test2"))
+        sftp.sink("sftp://localhost:2222/upload/test"))
       printer.print("2")
       printer.close
     }
 
     val lines = new BufferedReader(
       new InputStreamReader(
-        sftp.source("sftp://localhost:2222/upload/test2")
+        sftp.source("sftp://localhost:2222/upload/test")
       )
     ).lines.iterator.asScala.toList
 
