@@ -35,7 +35,7 @@ class SplitterSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
   "Ordered.split" should "keep the input order when splitting" in {
     val input = LocalFS.compression(None)
       .reader(LocalFS.source(in)).buffered
-    new OrderedSplitter(input, 4)
+    new OrderedSplitter(input, 8)
       .sinks(Array(new PrintWriter(out1), new PrintWriter(out2)))
 
     val lines1 = scala.io.Source.fromFile(out1).getLines.toSeq

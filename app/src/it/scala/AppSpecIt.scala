@@ -2,6 +2,7 @@ package me.amanj.file.splitter
 
 import org.scalatest._
 import java.io.{File, PrintWriter}
+import scala.io.Source
 import java.nio.file.{Files, Path}
 
 class AppSpecIt extends FlatSpec with
@@ -48,6 +49,26 @@ class AppSpecIt extends FlatSpec with
     outputFiles.foreach { file =>
       file.length shouldBe 2L
     }
+  }
+
+  it should "respect --keep-order option" in {
+    val args = Array (
+      "-i", s"file://${in.toString}",
+      "-o", s"file://${outDir.toString}",
+      "-n", "2",
+      "--keep-order"
+    )
+
+    // run the application
+    App.main(args)
+
+    val firstLines =
+      Source.fromFile(s"${outDir.toString}/part-00000").getLines
+    val secondLines =
+      Source.fromFile(s"${outDir.toString}/part-00001").getLines
+
+    firstLines.toList shouldBe List("1", "2")
+    secondLines.toList shouldBe List("3", "4")
   }
 }
 

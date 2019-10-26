@@ -14,7 +14,8 @@ class OrderedSplitter(input: BufferedReader,
     var bytesRead = 0L
     input.lines.forEach { line =>
       printers(sinkIndex).println(line)
-      bytesRead += line.getBytes.length
+      // the last + 1 is for new line
+      bytesRead += line.getBytes.length + 1
       if(bytesRead >= cutoff) {
         if(sinkIndex != printers.length -1) {
           bytesRead = 0L
