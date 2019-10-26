@@ -63,7 +63,7 @@ class SftpSpecIt extends FlatSpec with
     val exists = yes {
       sftp.exists("sftp://localhost:2222/upload/test")
     }
-    exists shouldBe false
+    exists shouldBe true
   }
 
   "size" should "return size of the object" in {
@@ -89,14 +89,14 @@ class SftpSpecIt extends FlatSpec with
   "sink" should "should get output stream of path" in {
     yes {
       val printer = new PrintWriter(
-        sftp.sink("sftp://localhost:2222/test2"))
+        sftp.sink("sftp://localhost:2222/upload/test2"))
       printer.print("2")
       printer.close
     }
 
     val lines = new BufferedReader(
       new InputStreamReader(
-        sftp.source("sftp://localhost:2222/test2")
+        sftp.source("sftp://localhost:2222/upload/test2")
       )
     ).lines.iterator.asScala.toList
 
