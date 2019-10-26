@@ -38,6 +38,23 @@ it.
     bin/splitter -i stdin -o file:///tmp/parts -n 9
   ```
 
+## Building from teh source
+
+### Requirements
+
+- Java 8
+- SBT 1.3
+- Shellcheck (for testing) found [here](https://github.com/koalaman/shellcheck)
+- Docker (for integration testing) found [here](https://www.docker.com)
+
+## Building from the source
+
+SBT takes care of building/testing and integration testing:
+
+- First run `ci/env-setup`. This starts the docker instances for S3mock, Hadoop
+  and SFTP for integration testing
+- Then: `sbt clean test it:test package`
+
 ## Supported options
 
 ```sh
