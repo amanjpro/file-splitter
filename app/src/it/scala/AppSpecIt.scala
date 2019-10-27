@@ -127,7 +127,7 @@ class AppSpecIt extends FlatSpec with
     }
   }
 
-  it should "fail if input does not exist" in {
+  it should "fail if input does not exist, and with exit-code be 1" in {
     val args = Array (
       "-i", s"file://${outDir.toString}/nope}",
       "-o", s"file://${outDir.toString}",
@@ -143,7 +143,7 @@ class AppSpecIt extends FlatSpec with
     }
   }
 
-  it should "fail if output exists" in {
+  it should "fail if output exists, and with exit-code be 2" in {
     val args = Array (
       "-i", s"file://${in.toString}",
       "-o", s"file://${outDir.toString}",
@@ -157,7 +157,7 @@ class AppSpecIt extends FlatSpec with
       App.main(args)
     } catch {
       case e: ExitException =>
-        e.status shouldBe 1
+        e.status shouldBe 2
     }
   }
 }

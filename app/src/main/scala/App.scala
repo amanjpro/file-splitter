@@ -66,7 +66,7 @@ object App {
             println(s"$part exists, cannot override...")
           }
           println("quitting")
-          System.exit(1)
+          System.exit(2)
         }
       case _            => // do nothing
     }
