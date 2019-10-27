@@ -48,7 +48,8 @@ object App {
       getPartNames(output, outputFS.separator,
         config.numberOfParts, outCompression.extension)
 
-    if(partNames.forall(! outputFS.exists(_))) {
+    if(partNames.forall(part =>
+        !outputFS.exists(outputFS.extractFilePath(part)))) {
       val dest = getSinks(outCompression, partNames, outputFS)
       if(config.keepOrder)
         source
@@ -60,9 +61,11 @@ object App {
           .unordered
           .sinks(dest.toArray)
     } else {
-      partNames.filter(outputFS.exists(_)).foreach { part =>
-        println(s"$part exists, cannot override...")
-      }
+      partNames
+        .filter(part => outputFS.exists(outputFS.extractFilePath(part)))
+        .foreach { part =>
+          println(s"${outputFS.extractFilePath(part)} exists, cannot override...")
+        }
       println("quitting")
       System.exit(2)
     }

@@ -1,7 +1,7 @@
 package me.amanj.file.splitter
 
 import me.amanj.file.splitter.compression.Gzip
-import java.io.{File, PrintWriter, FileInputStream}
+import java.io.{File, PrintWriter, FileInputStream, ByteArrayOutputStream}
 import scala.io.Source
 import java.nio.file.{Files, Path}
 import java.security.Permission
@@ -129,16 +129,21 @@ class AppSpecIt extends FlatSpec with
 
   it should "fail if input does not exist, and with exit-code be 1" in {
     val args = Array (
-      "-i", s"file://${outDir.toString}/nope}",
+      "-i", s"file://${outDir.toString}/nope",
       "-o", s"file://${outDir.toString}",
     )
 
     System.setSecurityManager(new NoExitSecurityManager())
+    val out = new ByteArrayOutputStream()
+
     try {
-      // run the application
-      App.main(args)
+      Console.withOut(out) {
+        // run the application
+        App.main(args)
+      }
     } catch {
       case e: ExitException =>
+        out.toString shouldBe s"${outDir.toString}/nope does not exist, quitting...\n"
         e.status shouldBe 1
     }
   }
@@ -149,14 +154,19 @@ class AppSpecIt extends FlatSpec with
       "-o", s"file://${outDir.toString}",
     )
 
-    new File(s"${outDir.toString}/part-00000").createNewFile
+    val outputPart = new File(s"${outDir.toString}/part-00000")
+    outputPart.createNewFile
+    val out = new ByteArrayOutputStream()
 
     System.setSecurityManager(new NoExitSecurityManager())
     try {
       // run the application
-      App.main(args)
+      Console.withOut(out) {
+        App.main(args)
+      }
     } catch {
       case e: ExitException =>
+        out.toString shouldBe s"$outputPart exists, cannot override...\nquitting\n"
         e.status shouldBe 2
     }
   }
