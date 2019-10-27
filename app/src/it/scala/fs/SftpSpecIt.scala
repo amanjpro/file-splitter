@@ -5,6 +5,7 @@ import org.scalatest._
 import java.nio.file.{Files, Path}
 import java.io.{File, PrintWriter, BufferedReader,
   InputStreamReader, StringReader, ByteArrayOutputStream}
+import net.schmizz.sshj.transport.TransportException
 
 // Java interop
 import scala.jdk.CollectionConverters._
@@ -139,6 +140,26 @@ class SftpSpecIt extends FlatSpec with
       sftp.exists("sftp://localhost:2222/upload/test3")
     }
     answer shouldBe false
+  }
+
+
+  it should "stop immediately, if host fingerprint is changed" in {
+    yes {
+      sftp.exists("sftp://localhost:2222/upload/test2")
+    }
+
+    val sftp2 = new Sftp(sftp.auth,
+      getClass.getResource("/ssh/bad_known_hosts").getFile)
+
+    val out = new ByteArrayOutputStream()
+
+    Console.withOut(out) {
+      intercept[TransportException] {
+        sftp2.exists("sftp://localhost:2222/upload/test2")
+      }
+    }
+
+    out.toString should include ("WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!")
   }
 
   it should "should be able to verify by public/private key" in {
