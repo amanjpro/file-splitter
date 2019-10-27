@@ -117,7 +117,7 @@ class SftpSpecIt extends FlatSpec with
       "Are you sure you want to continue connecting? [yes/no]"))
   }
 
-  "Sftp" should "not ask for confirmation when the server is known" in {
+  it should "not ask for confirmation when the server is known" in {
     yes {
       sftp.exists("sftp://localhost:2222/upload/test")
     }
@@ -125,7 +125,23 @@ class SftpSpecIt extends FlatSpec with
     sftp.exists("sftp://localhost:2222/upload/test") shouldBe true
   }
 
-  "Sftp" should "should be able to verify by public/private key" in {
+  it should "not proceed when asked to" in {
+    no {
+      intercept[TransportException] {
+        val printer = new PrintWriter(
+          sftp.sink("sftp://localhost:2222/upload/test3"))
+        printer.print("3")
+        printer.close
+      }
+    }
+
+    val answer = yes {
+      sftp.exists("sftp://localhost:2222/upload/test3")
+    }
+    answer shouldBe false
+  }
+
+  it should "should be able to verify by public/private key" in {
     val locations = Array(
         getClass.getResource("/ssh/id_rsa").getFile)
 
