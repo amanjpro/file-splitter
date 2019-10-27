@@ -47,7 +47,7 @@ it.
 - Shellcheck (for testing) found [here](https://github.com/koalaman/shellcheck)
 - Docker (for integration testing) found [here](https://www.docker.com)
 
-## Building from the source
+### Building from the source
 
 SBT takes care of building/testing and integration testing:
 
