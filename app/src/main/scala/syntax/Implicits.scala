@@ -15,9 +15,6 @@ object Implicits {
   implicit class ReaderExt(self: Reader) {
     def buffered: BufferedReader =
       new BufferedReader(self)
-
-    def sinks(printers: Array[PrintWriter]): Unit =
-      buffered.sinks(printers)
   }
 
   implicit class BufferedReaderExt(self: BufferedReader) {
