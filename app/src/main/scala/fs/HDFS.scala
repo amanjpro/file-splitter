@@ -12,10 +12,6 @@ case class HDFS(rootURI: String = HDFSDefaultRootURI,
 
   val fileSystem: FileSystem = {
     hadoopConf.set("fs.defaultFS", rootURI)
-    hadoopConf.set("fs.hdfs.impl",
-      classOf[org.apache.hadoop.hdfs.DistributedFileSystem].getName())
-    hadoopConf.set("fs.file.impl",
-      classOf[org.apache.hadoop.fs.LocalFileSystem].getName())
     // Set HADOOP user
     System.setProperty("HADOOP_USER_NAME", user)
     System.setProperty("hadoop.home.dir", home)
