@@ -51,6 +51,9 @@ def project(baseDir: String, plugin: Option[AutoPlugin] = None): Project = {
         assemblyMergeStrategy in assembly := {
           case PathList("META-INF", xs@_*) =>
             xs.map(_.toLowerCase) match {
+              case ps @ (x :: xs) if ps.last.endsWith(".sf")
+                || ps.last.endsWith(".dsa") || ps.last.endsWith(".rsa") =>
+                MergeStrategy.discard
               case ("manifest.mf" :: Nil) |
                    ("index.list" :: Nil) |
                    ("dependencies" :: Nil) |
