@@ -2,19 +2,42 @@ val Organization = "me.amanj"
 val ProjectName = "file-splitter"
 val ProjectScalaVersion = "2.13.0"
 val LibraryDependencies = Seq(
-  "software.amazon.awssdk" % "s3" % "2.10.1" excludeAll {
-    ExclusionRule(organization = "com.fasterxml.jackson.core")
-  },
+  "software.amazon.awssdk" % "s3" % "2.10.1" excludeAll (
+    ExclusionRule(organization = "com.fasterxml.jackson.core"),
+    ExclusionRule(organization = "com.typesafe.akka",
+      name = "akka-actor")
+  ),
   "org.apache.hadoop" % "hadoop-hdfs-client" % "3.2.1" excludeAll (
     ExclusionRule(organization = "com.fasterxml.jackson.core"),
     ExclusionRule(organization = "org.eclipse.jetty"),
-    ExclusionRule(organization = "org.apache.zookeeper", name = "zookeeper")
+    ExclusionRule(organization = "org.apache.zookeeper",
+      name = "zookeeper"),
+    ExclusionRule(organization = "com.google.protobuf",
+      name = "protobuf-java" ),
+    ExclusionRule(organization = "commons-beanutils",
+      name = "commons-beanutils" ),
+    ExclusionRule(organization = "org.apache.commons",
+      name = "commons-compress" ),
+    ExclusionRule(organization = "com.beust", name = "jcommander")
   ),
   "org.apache.hadoop" % "hadoop-common" % "3.2.1" excludeAll (
     ExclusionRule(organization = "com.fasterxml.jackson.core"),
     ExclusionRule(organization = "org.eclipse.jetty"),
-    ExclusionRule(organization = "org.apache.zookeeper", name = "zookeeper")
+    ExclusionRule(organization = "org.apache.zookeeper",
+      name = "zookeeper"),
+    ExclusionRule(organization = "com.google.protobuf",
+      name = "protobuf-java" ),
+    ExclusionRule(organization = "commons-beanutils",
+      name = "commons-beanutils" ),
+    ExclusionRule(organization = "org.apache.commons",
+      name = "commons-compress" ),
+    ExclusionRule(organization = "com.beust", name = "jcommander")
   ),
+  "com.google.protobuf" % "protobuf-java" % "3.10.0",
+  "commons-beanutils" % "commons-beanutils" % "1.9.4",
+  "org.apache.commons" % "commons-compress"  % "1.19",
+  "com.beust" % "jcommander" % "1.78",
+  "com.typesafe.akka" %% "akka-actor" % "2.5.26",
   "org.eclipse.jetty" % "jetty-util" % "9.4.22.v20191022",
   "org.eclipse.jetty" % "jetty-server" % "9.4.22.v20191022",
   "org.eclipse.jetty" % "jetty-servlet" % "9.4.22.v20191022",
@@ -24,9 +47,11 @@ val LibraryDependencies = Seq(
   "com.github.scopt" %% "scopt" % "3.7.1",
   "com.hierynomus" % "sshj" % "0.27.0",
   "org.scalatest" %% "scalatest" % "3.0.8" % "test,it",
-  "software.amazon.awssdk" % "url-connection-client" % "2.10.1" % "it" excludeAll {
-    ExclusionRule(organization = "com.fasterxml.jackson.core")
-  }
+  "software.amazon.awssdk" % "url-connection-client" % "2.10.1" % "it" excludeAll (
+    ExclusionRule(organization = "com.fasterxml.jackson.core"),
+    ExclusionRule(organization = "com.typesafe.akka",
+      name = "akka-actor")
+  )
 )
 
 organization in ThisBuild := Organization
