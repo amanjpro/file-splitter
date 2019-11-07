@@ -71,8 +71,8 @@ case class Sftp(auth: Sftp.Auth,
           EnumSet.of(OpenMode.WRITE, OpenMode.CREAT))
       } catch {
         case e: IOException =>
-          println(e.toString)
-          ???
+          println(s"Openning $path")
+          throw e
       }
       new handle.RemoteFileOutputStream() {
           override def close(): Unit = {

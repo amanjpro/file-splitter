@@ -2,12 +2,31 @@ val Organization = "me.amanj"
 val ProjectName = "file-splitter"
 val ProjectScalaVersion = "2.13.0"
 val LibraryDependencies = Seq(
-  "software.amazon.awssdk" % "s3" % "2.9.14",
-  "org.apache.hadoop" % "hadoop-client" % "3.2.1",
+  "software.amazon.awssdk" % "s3" % "2.10.1" excludeAll {
+    ExclusionRule(organization = "com.fasterxml.jackson.core")
+  },
+  "org.apache.hadoop" % "hadoop-hdfs-client" % "3.2.1" excludeAll (
+    ExclusionRule(organization = "com.fasterxml.jackson.core"),
+    ExclusionRule(organization = "org.eclipse.jetty"),
+    ExclusionRule(organization = "org.apache.zookeeper", name = "zookeeper")
+  ),
+  "org.apache.hadoop" % "hadoop-common" % "3.2.1" excludeAll (
+    ExclusionRule(organization = "com.fasterxml.jackson.core"),
+    ExclusionRule(organization = "org.eclipse.jetty"),
+    ExclusionRule(organization = "org.apache.zookeeper", name = "zookeeper")
+  ),
+  "org.eclipse.jetty" % "jetty-util" % "9.4.22.v20191022",
+  "org.eclipse.jetty" % "jetty-server" % "9.4.22.v20191022",
+  "org.eclipse.jetty" % "jetty-servlet" % "9.4.22.v20191022",
+  "org.eclipse.jetty" % "jetty-webapp" % "9.4.22.v20191022",
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.10.0" ,
+  "org.apache.zookeeper" % "zookeeper" % "3.5.6",
   "com.github.scopt" %% "scopt" % "3.7.1",
   "com.hierynomus" % "sshj" % "0.27.0",
   "org.scalatest" %% "scalatest" % "3.0.8" % "test,it",
-  "software.amazon.awssdk" % "url-connection-client" % "2.9.14" % "it"
+  "software.amazon.awssdk" % "url-connection-client" % "2.10.1" % "it" excludeAll {
+    ExclusionRule(organization = "com.fasterxml.jackson.core")
+  }
 )
 
 organization in ThisBuild := Organization
@@ -26,9 +45,27 @@ def project(baseDir: String, plugin: Option[AutoPlugin] = None): Project = {
   val projectId = s"$ProjectName-$baseDir"
 
   val prj = Project(id = projectId, base = file(baseDir))
-    .settings(Seq(name := projectId,
-    exportJars in Compile := false,
-    ))
+    .settings( Seq(
+        name := projectId,
+        exportJars in Compile := false,
+        assemblyMergeStrategy in assembly := {
+          case PathList("META-INF", xs@_*) =>
+            xs.map(_.toLowerCase) match {
+              case ps @ (x :: xs) if ps.last.endsWith(".sf")
+                || ps.last.endsWith(".dsa") || ps.last.endsWith(".rsa") =>
+                MergeStrategy.discard
+              case ("manifest.mf" :: Nil) |
+                   ("index.list" :: Nil) |
+                   ("dependencies" :: Nil) |
+                   ("license" :: Nil) |
+                   ("notice" :: Nil) => MergeStrategy.discard
+              case _ => MergeStrategy.first // was 'discard' previousely
+            }
+          case "reference.conf" => MergeStrategy.concat
+          case _ => MergeStrategy.first
+        }
+      )
+    )
   plugin.map {
     case p@DistributionPlugin =>
       prj.enablePlugins(p).settings(projectName := ProjectName)
