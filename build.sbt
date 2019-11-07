@@ -4,8 +4,7 @@ val ProjectScalaVersion = "2.13.0"
 val LibraryDependencies = Seq(
   "software.amazon.awssdk" % "s3" % "2.10.1" excludeAll (
     ExclusionRule(organization = "com.fasterxml.jackson.core"),
-    ExclusionRule(organization = "com.typesafe.akka",
-      name = "akka-actor")
+    ExclusionRule(organization = "com.typesafe.netty")
   ),
   "org.apache.hadoop" % "hadoop-hdfs-client" % "3.2.1" excludeAll (
     ExclusionRule(organization = "com.fasterxml.jackson.core"),
@@ -37,7 +36,7 @@ val LibraryDependencies = Seq(
   "commons-beanutils" % "commons-beanutils" % "1.9.4",
   "org.apache.commons" % "commons-compress"  % "1.19",
   "com.beust" % "jcommander" % "1.78",
-  "com.typesafe.akka" %% "akka-actor" % "2.5.26",
+  "com.typesafe.netty" % "netty-reactive-streams-http" % "2.0.3",
   "org.eclipse.jetty" % "jetty-util" % "9.4.22.v20191022",
   "org.eclipse.jetty" % "jetty-server" % "9.4.22.v20191022",
   "org.eclipse.jetty" % "jetty-servlet" % "9.4.22.v20191022",
@@ -49,8 +48,7 @@ val LibraryDependencies = Seq(
   "org.scalatest" %% "scalatest" % "3.0.8" % "test,it",
   "software.amazon.awssdk" % "url-connection-client" % "2.10.1" % "it" excludeAll (
     ExclusionRule(organization = "com.fasterxml.jackson.core"),
-    ExclusionRule(organization = "com.typesafe.akka",
-      name = "akka-actor")
+    ExclusionRule(organization = "com.typesafe.netty")
   )
 )
 
