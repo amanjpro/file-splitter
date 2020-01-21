@@ -57,7 +57,7 @@ name := ProjectName
 scalaVersion in ThisBuild := ProjectScalaVersion
 crossPaths in ThisBuild := false
 publishMavenStyle in ThisBuild := true
-version in ThisBuild := "0.6.0-SNAPSHOT"
+version in ThisBuild := "0.5.2"
 coverageEnabled in ThisBuild := true
 
 scalacOptions in ThisBuild ++= Seq(
