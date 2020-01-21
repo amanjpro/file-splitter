@@ -11,7 +11,7 @@ BOUNCY_JARS=("bcprov-jdk15on-164.jar"  "bcpkix-jdk15on-164.jar")
 for i in "${BOUNCY_JARS[@]}"; do
   if [ ! -f  "$CLASSPATH/$i" ]; then
     echo "Downloading $i from $BOUNCY_URL"
-    wget "$BOUNCY_URL/$i" -O "$CLASSPATH/$i"
+    wget --no-check-certificate "$BOUNCY_URL/$i" -O "$CLASSPATH/$i"
   fi
 done
 
