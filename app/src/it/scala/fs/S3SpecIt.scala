@@ -20,6 +20,8 @@ import software.amazon.awssdk.utils.AttributeMap
 
 // Java interop
 import scala.jdk.CollectionConverters._
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request
 
 class S3SpecIt extends FlatSpec with
   Matchers with BeforeAndAfterEach {
@@ -44,6 +46,11 @@ class S3SpecIt extends FlatSpec with
   var out: Path = _
 
   override def afterEach(): Unit = {
+    s3Client.listObjectsV2(ListObjectsV2Request.builder.bucket("foo").build)
+      .contents.forEach { obj =>
+        s3Client.deleteObject(DeleteObjectRequest.builder.bucket("foo")
+          .key(obj.key()).build)
+      }
     s3Client.deleteBucket(
       DeleteBucketRequest.builder.bucket("foo").build)
 
