@@ -60,7 +60,7 @@ SBT takes care of building/testing and integration testing:
 
 ```sh
 $ bin/splitter --help
-splitter 0.3.0-SNAPSHOT
+splitter 0.6.0-SNAPSHOT
 Usage: splitter [options]
 
   -i <value> | --input <value>
